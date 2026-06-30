@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{%block title%}Login{%endblock%}
+{%block content%}
+<!-- <div class="?"> -->
+    <h1>Login</h1>
+    <form method="POST" action="{{url_for('auth.index')}}">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="Email" value="{{email}}" autocomplete="email" required>
+         
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Password" value="{{password}}" autocomplete="current-password" required>
+
+        <label class="remember me">
+            <input type="checkbox" name="remember" {% if email%}checked{%endif%}>
+            Remember me
+        </label>
+
+        <p>
+            Don't have an account?<br>
+            <a href="{{url_for('auth.register')}}">Register</a>
+        </p>
+
+        <input type="submit" value="Login">
+        <!-- <p>
+            <a href="{{url_for('auth.register')}}">Forgot Password?</a>
+        </p> -->
+    </form>
+<!-- </div> -->
+{%endblock%}
