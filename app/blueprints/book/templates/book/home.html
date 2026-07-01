@@ -1,0 +1,69 @@
+{%extends "base.html" %}
+{% block title%}Home Page{%endblock%}
+{%block content%}
+<h1>Home Page</h1>
+<h2>{{message}}</h2>
+<h3>My Library</h3>
+
+{% if books %}
+
+<table border="1">
+
+<tr>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Status</th>
+    <th>Current Page</th>
+    <th>Rating</th>
+    <th>Collection</th>
+    <th>Actions</th>
+</tr>
+
+{% for book in books %}
+
+<tr>
+
+    <td>{{ book.book.title }}</td>
+
+    <td>{{ book.book.author }}</td>
+
+    <td>{{ book.status }}</td>
+
+    <td>{{ book.current_page }}</td>
+
+    <td>{{ book.rating }}</td>
+
+    <td>{{ book.collection }}</td>
+
+    <td>
+
+        <a href="{{ url_for('book.userbook_update', uid=book.uid) }}">
+            Update
+        </a>
+
+        |
+
+        <a href="{{ url_for('book.userbook_delete', uid=book.uid) }}">
+            Delete
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<h3>No books added yet.</h3>
+
+{% endif %}
+<form action ="{{url_for('book.book_add')}}">
+    <input type="submit" value="Add Book">
+</form>
+<form action ="{{url_for('book.logout')}}">
+    <input type="submit" value="Logout">
+</form>
+{%endblock%}

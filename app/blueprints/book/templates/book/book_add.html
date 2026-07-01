@@ -1,0 +1,60 @@
+{%extends "base.html" %}
+{% block title%}Book Add{%endblock%}
+{%block content%}
+<h1>Add New Book</h1>
+
+    <form action="{{ url_for('book.book_add') }}" method="POST">
+
+        <label>Title</label><br>
+        <input type="text" name="title" required>
+        <br><br>
+
+        <label>Author</label><br>
+        <input type="text" name="author" required>
+        <br><br>
+
+        <label>Language</label><br>
+        <input type="text" name="language">
+        <br><br>
+
+        <label>Genre</label><br>
+        <select name="genre">
+
+            <option value="">Select Genre</option>
+
+            <option>Fantasy</option>
+            <option>Fiction</option>
+            <option>Programming</option>
+            <option>Science Fiction</option>
+            <option>Biography</option>
+            <option>Self Help</option>
+            <option>History</option>
+
+        </select>
+
+        <br><br>
+
+        <label>Total Pages</label><br>
+        <input type="number" name="page_count">
+        <br><br>
+
+        <label>Published Year</label><br>
+        <input type="number" name="published_year">
+        <br><br>
+
+        <label>Description</label><br>
+
+        <textarea
+            name="description"
+            rows="5"
+            cols="50">
+        </textarea>
+
+        <br><br>
+
+        <button type="submit">
+            Continue
+        </button>
+
+    </form>
+{%endblock%}

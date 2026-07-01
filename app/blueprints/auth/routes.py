@@ -10,7 +10,7 @@ auth=Blueprint('auth',__name__,template_folder='templates')
 def index():
     
     if current_user.is_authenticated:
-        return "Welcome" # redirect(url_for())
+        return redirect(url_for("book.home"))
     
     if request.method=='GET':
         return render_template("auth/index.html")
@@ -27,7 +27,7 @@ def index():
             login=History(username=user.username,login_time=datetime.now(),logout_time=None)
             db.session.add(login)
             db.session.commit()
-            return "Welcome" #redirect(url_for())
+            return redirect(url_for("book.home"))
         else:
             return "Invalid Credential"
         

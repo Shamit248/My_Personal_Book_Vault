@@ -10,6 +10,9 @@ class Credential(db.Model,UserMixin):
     username=db.Column(db.String(100),nullable=False,unique=True)
     password=db.Column(db.String(100),nullable=False)
     
+    history = db.relationship("History",  back_populates="user")
+    user_books = db.relationship("Userbook", back_populates="user")
+    
     def get_id(self):
         return str(self.pid)
     
@@ -22,3 +25,4 @@ class History(db.Model,UserMixin):
     login_time=db.Column(db.DateTime,default=datetime.now)
     logout_time=db.Column(db.DateTime,nullable=True)
     
+    user = db.relationship("Credential", back_populates="history")

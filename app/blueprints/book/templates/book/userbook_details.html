@@ -1,0 +1,57 @@
+{%extends "base.html" %}
+{% block title%}Userbook Details{%endblock%}
+{%block content%}
+<h1>Add New Book</h1>
+
+    <form action="{{ url_for('book.userbook_details',bid=book_detail.bid) }}" method="POST">
+
+        <label>Status</label><br>
+    <select name="status" required>
+        <option value="">-- Select Status --</option>
+        <option value="To Read">To Read</option>
+        <option value="Reading">Reading</option>
+        <option value="Completed">Completed</option>
+    </select>
+
+    <br><br>
+
+    <label>Current Page</label><br>
+    <input type="number" name="current_page" min="0" value="0">
+
+    <br><br>
+
+    <label>Collection</label><br>
+    <select name="collection">
+        <option value="General">General</option>
+        <option value="Favorites">Favorites</option>
+        <option value="Programming">Programming</option>
+        <option value="Self Help">Self Help</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Fiction">Fiction</option>
+        <option value="College">College</option>
+        <option value="Wishlist">Wishlist</option>
+    </select>
+
+    <br><br>
+
+    <label>Rating</label><br>
+    <select name="rating">
+        <option value="0">No Rating</option>
+        <option value="1">⭐ 1</option>
+        <option value="2">⭐⭐ 2</option>
+        <option value="3">⭐⭐⭐ 3</option>
+        <option value="4">⭐⭐⭐⭐ 4</option>
+        <option value="5">⭐⭐⭐⭐⭐ 5</option>
+    </select>
+
+    <br><br>
+
+    <label>Personal Note</label><br>
+    <textarea name="note" rows="5" cols="40"></textarea>
+
+    <br><br>
+
+    <button type="submit">Save Book</button>
+
+    </form>
+{%endblock%}

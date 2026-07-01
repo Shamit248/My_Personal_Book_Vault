@@ -1,0 +1,103 @@
+{% extends "base.html"%}
+{% block title%}Userbook Update{%endblock%}
+{%block content%}
+<h2>Edit Reading Details</h2>
+<h3>{{ userbook.book.title }}</h3>
+
+<p>
+    <strong>Author:</strong> {{ userbook.book.author }}
+</p>
+
+<hr>
+<form method="POST" action="{{url_for('book.userbook_update',uid=userbook.uid)}}">
+
+<label>Status</label>
+
+<select name="status">
+
+    <option value="To Read"
+    {% if userbook.status=="To Read" %}selected{% endif %}>
+    To Read
+    </option>
+
+    <option value="Reading"
+    {% if userbook.status=="Reading" %}selected{% endif %}>
+    Reading
+    </option>
+
+    <option value="Completed"
+    {% if userbook.status=="Completed" %}selected{% endif %}>
+    Completed
+    </option>
+
+</select>
+
+<br><br>
+
+<label>Current Page</label>
+
+<input
+type="number"
+name="current_page"
+value="{{ userbook.current_page }}">
+
+<br><br>
+
+<label>Collection</label>
+
+<select name="collection">
+
+<option
+value="Favorites"
+{% if userbook.collection=="Favorites" %}selected{% endif %}>
+Favorites
+</option>
+
+<option
+value="Programming"
+{% if userbook.collection=="Programming" %}selected{% endif %}>
+Programming
+</option>
+
+<option
+value="Fantasy"
+{% if userbook.collection=="Fantasy" %}selected{% endif %}>
+Fantasy
+</option>
+
+</select>
+
+<br><br>
+
+<label>Rating</label>
+
+<select name="rating">
+
+{% for i in range(6) %}
+
+<option
+value="{{ i }}"
+{% if userbook.rating==i %}selected{% endif %}>
+{{ i }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<label>Notes</label>
+
+<textarea name="note">{{ userbook.note }}</textarea>
+
+<br><br>
+
+<button type="submit">
+
+Update Book
+
+</button>
+
+</form>
+{%endblock%}
