@@ -1,27 +1,82 @@
 {% extends "base.html" %}
-
-{% block title %}Register{% endblock %}
-
+{% block title %}Create account — My Personal Book Vault{% endblock %}
 {% block content %}
-<!-- <div class="?"> -->
-    <h1>Register</h1>
-    <form method="POST" action="{{url_for('auth.register')}}">
-        <label for="email">Email</label>
-        <input type="email" name="email" placeholder="Email" id="email" value="{{email}}" autocomplete="email" required>
+<div class="auth-wrap">
 
-        <label for="username">Username</label>
-        <input type="text" name="username" placeholder="Username" id="username" value="{{username}}" autocomplete="username" required>
-        
-        <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Password" id="password" value="{{password}}" autocomplete="new-password" required>
+  <div class="auth-brand">
+    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="38" rx="9" fill="#2d5a3d"/>
+      <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.9"/>
+      <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
+      <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.5"/>
+    </svg>
+    <span class="auth-brand-name">My Personal <strong>Book Vault</strong></span>
+  </div>
 
-        <input type="submit" value="Register">
+  <div class="auth-card">
+    <h1 class="auth-title">Create your vault</h1>
+    <p class="auth-sub">Begin your reading journey</p>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
-        {% endfor %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <i class="ti ti-alert-circle"></i> {{ message }}
+        </div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+      <div class="field">
+  <label for="email">Email address</label>
+  <div class="input-wrap">
+    <i class="ti ti-mail input-icon" aria-hidden="true"></i>
+    <input type="email" name="email" id="email"
+           placeholder="name@example.com"
+           value="{{ email or '' }}"
+           autocomplete="email" required>
+  </div>
+</div>
+
+<div class="field">
+  <label for="username">Username</label>
+  <div class="input-wrap">
+    <i class="ti ti-user input-icon" aria-hidden="true"></i>
+    <input type="text" name="username" id="username"
+           placeholder="Choose a username"
+           value="{{ username or '' }}"
+           autocomplete="username" required>
+  </div>
+</div>
+
+<div class="field">
+  <label for="password">Password</label>
+  <div class="input-wrap">
+    <i class="ti ti-lock input-icon" aria-hidden="true"></i>
+    <input type="password" name="password" id="password"
+           placeholder="Min. 8 characters"
+           autocomplete="new-password"
+           minlength="8" required oninput="checkStrength(this.value)">
+    <button type="button" class="eye-btn" onclick="togglePwd()" aria-label="Show password">
+      <i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="strength">
+    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+    <p class="strength-text" id="strength-text"></p>
+  </div>
+</div>
+      <button type="submit" class="btn-primary">Create account</button>
     </form>
-<!-- </div> -->
-{%endblock%}
+
+    <p class="auth-footer">Already have an account? <a href="{{ url_for('auth.index') }}">Sign in</a></p>
+  </div>
+</div>
+<script>
+function togglePwd() {
+  const inp = document.getElementById('password');
+  const icon = document.getElementById('eye-icon');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  icon.className = inp.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
+}
+</script>
+{% endblock %}

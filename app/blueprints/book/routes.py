@@ -1,5 +1,4 @@
 from flask import Blueprint, flash,redirect,render_template,url_for,request
-from app.blueprints import book
 from app.blueprints.auth.modules import Credential,History
 from app.blueprints.book.modules import Book,Userbook
 from app.extension import db
@@ -11,7 +10,7 @@ book=Blueprint('book',__name__,template_folder='templates')
 @book.route('/home',methods=['GET'])
 @login_required
 def home():
-    username=current_user.username
+    username=current_user.pid
     books=Userbook.query.filter_by(pid=current_user.pid).all()
     if request.method=='GET':
         return render_template("book/home.html",message=f'Welcome,{username}',books=books)
@@ -88,7 +87,7 @@ def userbook_update(uid):
             userbook.end_date=date.today()
         
         db.session.commit()
-        flash("{userbook.book.title} updated successfully!","success")
+        flash(f"{userbook.book.title} updated successfully!","success")
         return redirect(url_for("book.home"))
 
 @book.route('/userbook_delete/<int:uid>',methods=['GET','POST'])
@@ -98,7 +97,7 @@ def userbook_delete(uid):
     db.session.delete(userbook)
     db.session.commit()
     
-    flash("{userbook.book.title} removed from the library","success")
+    flash(f"{userbook.book.title} removed from the library","success")
     return redirect(url_for("book.home"))
         
 
@@ -110,8 +109,8 @@ def logout():
     if record:
         record.logout_time = datetime.now()
         db.session.commit()
-        logout_user()
-        return redirect(url_for("auth.index")) 
+    logout_user()
+    return redirect(url_for("auth.index")) 
         
         
         
