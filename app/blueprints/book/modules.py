@@ -11,6 +11,7 @@ class Book(db.Model):
     description=db.Column(db.Text,nullable=True)
     page_count=db.Column(db.Integer,nullable=False)
     published_year=db.Column(db.Integer,nullable=True)
+    cover_image = db.Column(db.String(500), nullable=True)
     
     user_books = db.relationship("Userbook", back_populates="book")
     
@@ -22,12 +23,13 @@ class Userbook(db.Model):
     uid=db.Column(db.Integer,primary_key=True)
     pid=db.Column(db.Integer,db.ForeignKey("credential.pid"),nullable=False)
     bid=db.Column(db.Integer,db.ForeignKey("book.bid"),nullable=False)
+    # cid=db.Column(db.Integer,db.Foreignkey("collection.cid"),nullable=False)
     current_page=db.Column(db.Integer,nullable=False)
     status=db.Column(db.String(100),nullable=False)
     collection=db.Column(db.String(100),nullable=False)
     note=db.Column(db.Text,nullable=True)
     rating=db.Column(db.Integer,db.CheckConstraint("rating >= 0 AND rating <= 5"),nullable=True)
-    start_date=db.Column(db.Date,default=date.today)
+    start_date=db.Column(db.Date,default=date.today())
     end_date=db.Column(db.Date,nullable=True)
     
     __table_args__=(db.UniqueConstraint("pid","bid",name="unique_user_book"),)

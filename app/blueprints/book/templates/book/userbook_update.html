@@ -1,4 +1,4 @@
-{% extends "base.html"%}
+{% extends "book/base.html"%}
 {% block title%}Userbook Update{%endblock%}
 {%block content%}
 <h2>Edit Reading Details</h2>
@@ -9,7 +9,7 @@
 </p>
 
 <hr>
-<form method="POST" action="{{url_for('book.userbook_update',uid=userbook.uid)}}">
+<form method="POST" action="{{url_for('book.userbook_update',uid=userbook.uid)}}" enctype="multipart/form-data">
 
 <label>Status</label>
 
@@ -89,9 +89,32 @@ value="{{ i }}"
 
 <label>Notes</label>
 
-<textarea name="note">{{ userbook.note }}</textarea>
+<textarea name="note">{{ userbook.note }}
+
+</textarea>
 
 <br><br>
+
+{% if userbook.book.cover_image %}
+
+<p>Current Cover</p>
+
+<img
+    src="{{ url_for('static', filename=userbook.book.cover_image) }}"
+    width="150"
+>
+
+{% endif %}
+<br></br>
+<label>Choose New Cover Image</label>
+
+<input
+    type="file"
+    name="file"
+    accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+>
+
+<br></br>
 
 <button type="submit">
 

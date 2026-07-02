@@ -1,9 +1,19 @@
-{%extends "base.html" %}
+{%extends "book/base.html" %}
 {% block title%}Book Add{%endblock%}
 {%block content%}
 <h1>Add New Book</h1>
 
-    <form action="{{ url_for('book.book_add') }}" method="POST">
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+    <form action="{{ url_for('book.book_add') }}" method="POST" enctype="multipart/form-data">
 
         <label>Title</label><br>
         <input type="text" name="title" required>
@@ -14,7 +24,7 @@
         <br><br>
 
         <label>Language</label><br>
-        <input type="text" name="language">
+        <input type="text" name="language" required>
         <br><br>
 
         <label>Genre</label><br>
@@ -29,13 +39,13 @@
             <option>Biography</option>
             <option>Self Help</option>
             <option>History</option>
-
+            <option>Other</option>
         </select>
 
         <br><br>
 
         <label>Total Pages</label><br>
-        <input type="number" name="page_count">
+        <input type="number" name="page_count" required>
         <br><br>
 
         <label>Published Year</label><br>
@@ -47,14 +57,16 @@
         <textarea
             name="description"
             rows="5"
-            cols="50">
-        </textarea>
+            cols="50"></textarea>
 
         <br><br>
+    <label for="file">Book Cover</label><br>
+    <input type="file"
+           name="file"
+           id="file"
+           accept=".png,.jpg,.jpeg,image/png,image/jpeg">
 
-        <button type="submit">
-            Continue
-        </button>
+    <br><br>
 
-    </form>
+    <button type="submit">Continue</button>
 {%endblock%}

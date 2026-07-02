@@ -1,69 +1,213 @@
-{%extends "base.html" %}
-{% block title%}Home Page{%endblock%}
-{%block content%}
-<h1>Home Page</h1>
-<h2>{{message}}</h2>
-<h3>My Library</h3>
+{% extends "book/base.html" %}
+{% block title %}My Library — Book Vault{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Library</h1>
+    <p class="page-sub">{{ message }}</p>
+  </div>
+  <a href="{{ url_for('book.book_add') }}" class="btn-add">
+    <i class="ti ti-plus" aria-hidden="true"></i> Add book
+  </a>
+</div>
+
+
+<div class="stats">
+  <div class="stat-card">
+    <p class="stat-label">Total books</p>
+    <p class="stat-val">{{ books|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Reading</p>
+    <p class="stat-val blue">{{ books|selectattr('status','equalto','Reading')|list|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Completed</p>
+    <p class="stat-val green">{{ books|selectattr('status','equalto','Completed')|list|length }}</p>
+  </div>
+  <div class="stat-card">
+    <p class="stat-label">Wishlist</p>
+    <p class="stat-val amber">{{ books|selectattr('status','equalto','Wishlist')|list|length }}</p>
+  </div>
+</div>
+
+<div class="search-bar">
+  <i class="ti ti-search" aria-hidden="true"></i>
+  <input type="text" id="search-input" placeholder="Search by title, author or collection…">
+</div>
 
 {% if books %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Cover</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Rating</th>
+        <th>Collection</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="book-table">
+      {% for ub in books %}
+      <tr>
+        <td>
+          {% if ub.book.cover_image %}
+          <img src="{{ url_for('static', filename=ub.book.cover_image) }}"
+             width="45"
+             height="65"
+             style="object-fit:cover;border-radius:4px;">
+          {% else %}
+          No Cover
+          {% endif %}
+        </td>
 
-<table border="1">
+<td>
+    <span class="book-title-link"
+        data-title="{{ ub.book.title }}"
+        data-author="{{ ub.book.author }}"
+        data-status="{{ ub.status }}"
+        data-rating="{{ ub.rating or 0 }}"
+        data-progress="{{ ub.current_page or '—' }} / {{ ub.book.page_count or '—' }}"
+        data-collection="{{ ub.collection or '—' }}"
+        data-start="{{ ub.start_date or '—' }}"
+        data-end="{{ ub.end_date or '—' }}"
+        data-genre="{{ ub.book.genre or '—' }}"
+        data-language="{{ ub.book.language or '—' }}"
+        data-year="{{ ub.book.published_year or '—' }}"
+        data-pages="{{ ub.book.page_count or '—' }}"
+        data-notes="{{ ub.note or 'No notes added.' }}"
+        data-cover="{{ url_for('static', filename=ub.book.cover_image) if ub.book.cover_image else '' }}">
+        {{ ub.book.title }}
+    </span>
+</td>
+        <td>{{ ub.book.author }}</td>
+        <td>
+          <span class="badge badge-{{ ub.status|lower }}">{{ ub.status }}</span>
+        </td>
+        <td>
+          {% if ub.current_page and ub.book.page_count %}
+            {{ ub.current_page }} / {{ ub.book.page_count }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>
+          {% if ub.rating %}
+            <span class="stars">
+              {% for i in range(ub.rating) %}★{% endfor %}
+              {% for i in range(5 - ub.rating) %}☆{% endfor %}
+            </span>
+          {% else %}
+            <span class="no-rating">Not rated</span>
+          {% endif %}
+        </td>
+        <td>{{ ub.collection or '—' }}</td>
+        <td>
+          <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
+             class="action-btn btn-edit">
+            <i class="ti ti-edit" aria-hidden="true"></i> Edit
+          </a>
+          <form action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
+      method="POST"
+      style="display:inline;"
+      onsubmit="return confirm('Remove this book from your library?');">
 
-<tr>
-    <th>Title</th>
-    <th>Author</th>
-    <th>Status</th>
-    <th>Current Page</th>
-    <th>Rating</th>
-    <th>Collection</th>
-    <th>Actions</th>
-</tr>
+    <button type="submit" class="action-btn btn-del">
+        <i class="ti ti-trash"></i> Delete
+    </button>
 
-{% for book in books %}
-
-<tr>
-
-    <td>{{ book.book.title }}</td>
-
-    <td>{{ book.book.author }}</td>
-
-    <td>{{ book.status }}</td>
-
-    <td>{{ book.current_page }}</td>
-
-    <td>{{ book.rating }}</td>
-
-    <td>{{ book.collection }}</td>
-
-    <td>
-
-        <a href="{{ url_for('book.userbook_update', uid=book.uid) }}">
-            Update
-        </a>
-
-        |
-
-        <a href="{{ url_for('book.userbook_delete', uid=book.uid) }}">
-            Delete
-        </a>
-
-    </td>
-
-</tr>
-
-{% endfor %}
-
-</table>
+</form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% else %}
-
-<h3>No books added yet.</h3>
-
+<div class="empty-state">
+  <i class="ti ti-books" aria-hidden="true"></i>
+  <p>Your library is empty.</p>
+  <a href="{{ url_for('book.book_add') }}" class="btn-add" style="margin-top:1rem;">
+    <i class="ti ti-plus" aria-hidden="true"></i> Add your first book
+  </a>
+</div>
 {% endif %}
-<form action ="{{url_for('book.book_add')}}">
-    <input type="submit" value="Add Book">
-</form>
-<form action ="{{url_for('book.logout')}}">
-    <input type="submit" value="Logout">
-</form>
-{%endblock%}
+
+<!-- Modal -->
+<div id="book-modal" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('book-modal').style.display='none'">
+      <i class="ti ti-x"></i>
+    </button>
+    <img id="m-cover" src="" alt="cover"
+     style="width:60px;height:90px;object-fit:cover;border-radius:6px;margin-bottom:0.75rem;display:none;">
+    <h2 class="modal-title" id="m-title"></h2>
+    <p class="modal-author" id="m-author"></p>
+    <div class="modal-grid">
+      <div class="modal-field"><span class="modal-label">Status</span><span id="m-status"></span></div>
+      <div class="modal-field"><span class="modal-label">Rating</span><span id="m-rating"></span></div>
+      <div class="modal-field"><span class="modal-label">Progress</span><span id="m-progress"></span></div>
+      <div class="modal-field"><span class="modal-label">Collection</span><span id="m-collection"></span></div>
+      <div class="modal-field"><span class="modal-label">Start Date</span><span id="m-start"></span></div>
+      <div class="modal-field"><span class="modal-label">End Date</span><span id="m-end"></span></div>
+      <div class="modal-field"><span class="modal-label">Genre</span><span id="m-genre"></span></div>
+      <div class="modal-field"><span class="modal-label">Language</span><span id="m-language"></span></div>
+      <div class="modal-field"><span class="modal-label">Published</span><span id="m-year"></span></div>
+      <div class="modal-field"><span class="modal-label">Pages</span><span id="m-pages"></span></div>
+    </div>
+    <div class="modal-field" style="margin-top:0.75rem">
+      <span class="modal-label">Notes</span>
+      <p id="m-notes" class="modal-notes"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('search-input').addEventListener('input', function () {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#book-table tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+document.querySelectorAll('.book-title-link').forEach(el => {
+  el.addEventListener('click', function () {
+    const d = this.dataset;
+    const cover = document.getElementById("m-cover");
+
+if (d.cover) {
+    cover.src = d.cover;
+    cover.style.display = "block";
+} else {
+    cover.style.display = "none";
+}
+    document.getElementById('m-title').textContent = d.title;
+    document.getElementById('m-author').textContent = 'by ' + d.author;
+    document.getElementById('m-status').textContent = d.status;
+    document.getElementById('m-progress').textContent = d.progress;
+    document.getElementById('m-collection').textContent = d.collection;
+    document.getElementById('m-start').textContent = d.start;
+    document.getElementById('m-end').textContent = d.end;
+    document.getElementById('m-genre').textContent = d.genre;
+    document.getElementById('m-language').textContent = d.language;
+    document.getElementById('m-year').textContent = d.year;
+    document.getElementById('m-pages').textContent = d.pages;
+    document.getElementById('m-notes').textContent = d.notes;
+    document.getElementById('m-rating').textContent =
+      d.rating > 0 ? '★'.repeat(Number(d.rating)) + '☆'.repeat(5 - Number(d.rating)) : 'Not rated';
+    document.getElementById('book-modal').style.display = 'flex';
+  });
+});
+
+function closeModal(e) {
+  if (e.target.id === 'book-modal')
+    document.getElementById('book-modal').style.display = 'none';
+}
+</script>
+{% endblock %}

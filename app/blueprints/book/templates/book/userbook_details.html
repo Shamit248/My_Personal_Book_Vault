@@ -1,4 +1,4 @@
-{%extends "base.html" %}
+{%extends "book/base.html" %}
 {% block title%}Userbook Details{%endblock%}
 {%block content%}
 <h1>Add New Book</h1>
@@ -8,7 +8,7 @@
         <label>Status</label><br>
     <select name="status" required>
         <option value="">-- Select Status --</option>
-        <option value="To Read">To Read</option>
+        <option value="To Read">Wishlist</option>
         <option value="Reading">Reading</option>
         <option value="Completed">Completed</option>
     </select>
