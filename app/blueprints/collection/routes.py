@@ -42,7 +42,7 @@ def create_collection():
     db.session.add(col)
     db.session.commit()
     flash(f'Collection "{name}" created.', "success")
-    return redirect(request.referrer or url_for('book.home'))
+    return redirect(url_for('book.home'))
 
 @collection.route('/delete/<int:cid>', methods=['POST'])
 @login_required
@@ -56,4 +56,4 @@ def delete_collection(cid):
     db.session.delete(col)
     db.session.commit()
     flash(f'Collection "{collection_name}" deleted.', "success")
-    return redirect(url_for('collection.view_collections'))
+    return redirect(url_for('book.home'))

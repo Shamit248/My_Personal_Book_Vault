@@ -9,9 +9,20 @@
     </h1>
     <p class="page-sub">{{ books|length }} book{{ 's' if books|length != 1 }}</p>
   </div>
-  <a href="{{ url_for('book.book_add') }}" class="btn-add">
-    <i class="ti ti-plus"></i> Add book
-  </a>
+
+  <div style="display:flex; gap:10px;">
+    <a href="{{ url_for('book.book_add') }}" class="btn-add">
+      <i class="ti ti-plus"></i> Add book
+    </a>
+
+    <form method="POST"
+          action="{{ url_for('collection.delete_collection', cid=collection.cid) }}"
+          onsubmit="return confirm('Delete this collection? Books will remain in your library.')">
+      <button type="submit" class="btn-logout">
+        <i class="ti ti-trash"></i> Remove collection
+      </button>
+    </form>
+  </div>
 </div>
 
 {% if books %}
