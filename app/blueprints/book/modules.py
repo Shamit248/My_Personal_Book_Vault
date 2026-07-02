@@ -23,13 +23,13 @@ class Userbook(db.Model):
     uid=db.Column(db.Integer,primary_key=True)
     pid=db.Column(db.Integer,db.ForeignKey("credential.pid"),nullable=False)
     bid=db.Column(db.Integer,db.ForeignKey("book.bid"),nullable=False)
-    # cid=db.Column(db.Integer,db.Foreignkey("collection.cid"),nullable=False)
+    cid=db.Column(db.Integer,db.ForeignKey("collection.cid"),nullable=True)
     current_page=db.Column(db.Integer,nullable=False)
     status=db.Column(db.String(100),nullable=False)
-    collection=db.Column(db.String(100),nullable=False)
+    # collection=db.Column(db.String(100),nullable=False)
     note=db.Column(db.Text,nullable=True)
     rating=db.Column(db.Integer,db.CheckConstraint("rating >= 0 AND rating <= 5"),nullable=True)
-    start_date=db.Column(db.Date,default=date.today())
+    start_date=db.Column(db.Date,default=date.today)
     end_date=db.Column(db.Date,nullable=True)
     
     __table_args__=(db.UniqueConstraint("pid","bid",name="unique_user_book"),)
@@ -37,6 +37,8 @@ class Userbook(db.Model):
     user = db.relationship("Credential", back_populates="user_books")
     
     book = db.relationship("Book",back_populates="user_books")
+    
+    collection = db.relationship("Collection", back_populates="user_books")
 
     def __repr__(self):
         return f"<UserBook pid={self.pid} bid={self.bid}>"

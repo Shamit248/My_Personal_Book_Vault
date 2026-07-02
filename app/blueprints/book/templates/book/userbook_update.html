@@ -43,7 +43,23 @@ value="{{ userbook.current_page }}">
 
 <br><br>
 
-<label>Collection</label>
+<div class="field">
+  <label for="cid">Collection</label>
+  <div class="input-wrap">
+    <i class="ti ti-folder input-icon"></i>
+    <select name="cid" id="cid" class="select-input">
+      <option value="">— No collection —</option>
+      {% for col in collection %}
+        <option value="{{ col.cid }}"
+          {% if userbook.cid == col.cid %}selected{% endif %}>
+          {{ col.collection_name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- <label>Collection</label>
 
 <select name="collection">
 
@@ -65,7 +81,7 @@ value="Fantasy"
 Fantasy
 </option>
 
-</select>
+</select> -->
 
 <br><br>
 

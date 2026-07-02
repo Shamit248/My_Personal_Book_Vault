@@ -1,6 +1,9 @@
+import collections
+
 from flask import Blueprint, flash,redirect,render_template,url_for,request
 from app.blueprints.auth.modules import Credential,History
 from app.blueprints.book.modules import Book,Userbook
+from app.blueprints.collection.modules import Collection
 from app.extension import db
 from flask_login import login_required,login_user,current_user,logout_user
 from datetime import date, datetime
@@ -21,9 +24,11 @@ def home():
 @book.route('/book_add', methods=['GET', 'POST'])
 @login_required
 def book_add():
-
+    
+    collection= Collection.query.filter_by(pid=current_user.pid).all()
+     
     if request.method == 'GET':
-        return render_template("book/book_add.html")
+        return render_template("book/book_add.html",collection=collection)
 
     author = request.form.get("author")
     title = request.form.get("title")
@@ -85,19 +90,21 @@ def book_add():
         flash("This book is already in your library.", "warning")
         return redirect(url_for("book.home"))
 
-    return redirect(url_for("book.userbook_details", bid=book_detail.bid))
+    return redirect(url_for("book.userbook_details", bid=book_detail.bid,collection=collection))
         
 @book.route('/userbook_details/<int:bid>',methods=['GET','POST'])
 @login_required
 def userbook_details(bid):
     book_detail=Book.query.filter_by(bid=bid).first()
+    collection = Collection.query.filter_by(pid=current_user.pid).all()
+    
     if request.method=='GET':
-        return render_template("book/userbook_details.html",book_detail=book_detail)
+        return render_template("book/userbook_details.html",book_detail=book_detail,collection=collection)
     if request.method=='POST':
         current_page=request.form.get("current_page")
         status=request.form.get("status")
-        collection=request.form.get("collection")
-        note=request.form.get("note","None")
+        cid=request.form.get("cid") or None
+        note=request.form.get("note","None") or None
         rating=request.form.get("rating",0)
         
         if status=="Completed":
@@ -105,7 +112,7 @@ def userbook_details(bid):
         else:
             enddate=None
             
-        details=Userbook(pid=current_user.pid,bid=bid,current_page=current_page,status=status,collection=collection,note=note,rating=rating,start_date=date.today(),end_date=enddate)
+        details=Userbook(pid=current_user.pid,bid=bid,current_page=current_page,status=status,cid=cid,note=note,rating=rating,start_date=date.today(),end_date=enddate)
         db.session.add(details)
         db.session.commit()
         
@@ -114,13 +121,15 @@ def userbook_details(bid):
 @book.route('/userbook_update/<int:uid>',methods=['GET','POST'])
 @login_required
 def userbook_update(uid):
-    userbook=Userbook.query.filter_by(uid=uid,pid=current_user.pid).first_or_404()  
+    userbook=Userbook.query.filter_by(uid=uid,pid=current_user.pid).first_or_404() 
+    collection = Collection.query.filter_by(pid=current_user.pid).all()
+     
     if request.method=='GET':
-        return render_template("book/userbook_update.html",userbook=userbook)
+        return render_template("book/userbook_update.html",userbook=userbook,collection=collection)
     if request.method=='POST':
         userbook.current_page=request.form.get("current_page")
         userbook.status=request.form.get("status")
-        userbook.collection=request.form.get("collection")
+        userbook.cid=request.form.get("cid")
         userbook.note=request.form.get("note")
         userbook.rating=request.form.get("rating")
         
@@ -128,7 +137,7 @@ def userbook_update(uid):
         if userbook.status=="Completed":
             userbook.end_date=date.today()
         
-            file = request.files.get("file")
+        file = request.files.get("file")
 
         if file and file.filename:
             ext = os.path.splitext(file.filename)[1].lower()

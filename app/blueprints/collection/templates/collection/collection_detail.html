@@ -1,0 +1,110 @@
+{% extends "book/base.html" %}
+{% block title %}{{ collection.collection_name }} — Book Vault{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">
+      <i class="ti ti-folder" aria-hidden="true"></i> {{ collection.collection_name }}
+    </h1>
+    <p class="page-sub">{{ books|length }} book{{ 's' if books|length != 1 }}</p>
+  </div>
+  <a href="{{ url_for('book.book_add') }}" class="btn-add">
+    <i class="ti ti-plus"></i> Add book
+  </a>
+</div>
+
+{% if books %}
+<div class="book-list">
+  {% for ub in books %}
+  <div class="book-list-card">
+
+    <div class="book-cover">
+      {% if ub.book.cover_image %}
+        <img src="{{ url_for('static', filename=ub.book.cover_image) }}"
+             alt="{{ ub.book.title }}">
+      {% else %}
+        <div class="cover-placeholder">
+          <i class="ti ti-book" aria-hidden="true"></i>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="book-info">
+      <h3 class="book-info-title">{{ ub.book.title }}</h3>
+      <p class="book-info-author">by {{ ub.book.author }}</p>
+
+      <div class="book-meta">
+        <span class="badge badge-{{ ub.status|lower }}">{{ ub.status }}</span>
+        {% if ub.rating %}
+          <span class="stars">
+            {% for i in range(ub.rating) %}★{% endfor %}
+            {% for i in range(5 - ub.rating) %}☆{% endfor %}
+          </span>
+        {% endif %}
+      </div>
+
+      <div class="book-details-grid">
+        <div class="book-detail-item">
+          <span class="detail-label">Started</span>
+          <span>{{ ub.start_date or '—' }}</span>
+        </div>
+        <div class="book-detail-item">
+          <span class="detail-label">Finished</span>
+          <span>{{ ub.end_date or '—' }}</span>
+        </div>
+        <div class="book-detail-item">
+          <span class="detail-label">Progress</span>
+          <span>
+            {% if ub.current_page and ub.book.page_count and ub.book.page_count > 0 %}
+              {{ ub.current_page }} / {{ ub.book.page_count }} pages
+              {% set pct = ((ub.current_page / ub.book.page_count) * 100)|round %}
+{% set pct = [pct, 100]|min %}
+<div class="progress-bar">
+  <div class="progress-fill" style="width: {{ pct }} %"></div>
+</div>
+            {% else %}—{% endif %}
+          </span>
+        </div>
+        <div class="book-detail-item">
+          <span class="detail-label">Genre</span>
+          <span>{{ ub.book.genre or '—' }}</span>
+        </div>
+      </div>
+
+      {% if ub.note %}
+      <p class="book-note">
+        <i class="ti ti-notes" aria-hidden="true"></i> {{ ub.note }}
+      </p>
+      {% endif %}
+    </div>
+
+    <div class="book-actions">
+      <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
+         class="action-btn btn-edit">
+        <i class="ti ti-edit"></i> Edit
+      </a>
+      <form method="POST"
+            action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
+            onsubmit="return confirm('Remove this book?')">
+        <button type="submit" class="action-btn btn-del">
+          <i class="ti ti-trash"></i>
+        </button>
+      </form>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  <i class="ti ti-folder-open" aria-hidden="true"></i>
+  <p>No books in this collection yet.</p>
+  <a href="{{ url_for('book.book_add') }}" class="btn-add" style="margin-top:1rem;">
+    <i class="ti ti-plus"></i> Add a book
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -73,7 +73,7 @@
         data-status="{{ ub.status }}"
         data-rating="{{ ub.rating or 0 }}"
         data-progress="{{ ub.current_page or '—' }} / {{ ub.book.page_count or '—' }}"
-        data-collection="{{ ub.collection or '—' }}"
+        data-collection="{{ ub.collection.collection_name if ub.collection else '—' }}"
         data-start="{{ ub.start_date or '—' }}"
         data-end="{{ ub.end_date or '—' }}"
         data-genre="{{ ub.book.genre or '—' }}"
@@ -106,7 +106,7 @@
             <span class="no-rating">Not rated</span>
           {% endif %}
         </td>
-        <td>{{ ub.collection or '—' }}</td>
+        <td>{{ ub.collection.collection_name if ub.collection else '—' }}</td>
         <td>
           <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
              class="action-btn btn-edit">

@@ -34,6 +34,26 @@
          class="nav-item {% if request.endpoint == 'book.book_add' %}active{% endif %}">
         <i class="ti ti-plus" aria-hidden="true"></i> Add Book
       </a>
+      <span class="nav-section">Collections</span>
+{% for col in collections %}
+<a href="{{ url_for('collection.collection_detail', cid=col.cid) }}"
+   class="nav-item {% if request.endpoint == 'collection.collection_detail' and request.view_args.get('cid')|int == col.cid %}active{% endif %}">
+  <i class="ti ti-folder" aria-hidden="true"></i> {{ col.collection_name }}
+</a>
+{% else %}
+<span class="nav-empty">No collections yet</span>
+{% endfor %}
+
+{# add this after the {% endfor %}: #}
+<form method="POST" action="{{ url_for('collection.create_collection') }}" style="padding: 4px 10px;">
+  <div class="input-wrap" style="display:flex;gap:6px;">
+    <input type="text" name="collection_name" placeholder="New collection…"
+           class="nav-input" required>
+    <button type="submit" class="nav-create-btn">
+      <i class="ti ti-plus"></i>
+    </button>
+  </div>
+</form>
 
       <span class="nav-section">Account</span>
       <a href="#" class="nav-item">

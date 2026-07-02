@@ -2,7 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.extension import bcrypt,login_manager,db,migrate
 from flask_migrate import Migrate
-from app.blueprints.auth import routes
 from dotenv import load_dotenv 
 import os
 
@@ -22,21 +21,28 @@ def create_app():
     
     from app.blueprints.auth.modules import Credential
     from app.blueprints.book.modules import Book, Userbook
-    # from app.blueprints.collection.modules import Collection
+    from app.blueprints.collection.modules import Collection
     
     @login_manager.user_loader
     def load_user(pid):
         return Credential.query.get(pid)
+    from flask_login import current_user
     
+    @app.context_processor
+    def inject_collections():
+        if current_user.is_authenticated:
+            from app.blueprints.collection.modules import Collection
+            return {"collections": Collection.query.filter_by(pid=current_user.pid).all()}
+        return {"collections": []}
     #import and register all bluprints
     from app.blueprints.auth.routes import auth
     from app.blueprints.book.routes import book
-    # from app.blueprints.collection.routes import collection
+    from app.blueprints.collection.routes import collection
     
     
     app.register_blueprint(auth,url_prefix='/')
     app.register_blueprint(book,url_prefix='/book')
-    # app.register_blueprint(collection,url_prefix='/collection')
+    app.register_blueprint(collection,url_prefix='/collection')
     
     return app
     
