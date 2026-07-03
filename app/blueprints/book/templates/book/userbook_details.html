@@ -36,7 +36,6 @@
       <div class="field">
         <label for="status">Status <span style="color:#c03030">*</span></label>
         <div class="input-wrap">
-          <i class="ti ti-bookmark input-icon"></i>
           <select name="status" id="status" class="select-input" required>
             <option value="">— Select status —</option>
             <option value="Wishlist">Wishlist</option>
@@ -58,7 +57,6 @@
       <div class="field">
         <label for="cid">Collection <span class="optional">(optional)</span></label>
         <div class="input-wrap">
-          <i class="ti ti-folder input-icon"></i>
           <select name="cid" id="cid" class="select-input">
             <option value="">— No collection —</option>
             {% for col in collections %}
@@ -71,14 +69,13 @@
       <div class="field">
         <label for="rating">Rating <span class="optional">(optional)</span></label>
         <div class="input-wrap">
-          <i class="ti ti-star input-icon"></i>
           <select name="rating" id="rating" class="select-input">
             <option value="">— No rating —</option>
-            <option value="1">★ 1 — Poor</option>
-            <option value="2">★★ 2 — Fair</option>
-            <option value="3">★★★ 3 — Good</option>
-            <option value="4">★★★★ 4 — Great</option>
-            <option value="5">★★★★★ 5 — Excellent</option>
+            <option value="1">★ </option>
+            <option value="2">★★ </option>
+            <option value="3">★★★</option>
+            <option value="4">★★★★</option>
+            <option value="5">★★★★★</option>
           </select>
         </div>
       </div>

@@ -10,3 +10,9 @@ uploads/*
 # Virtual environments
 .venv
 .env
+
+# Uploads
+uploads/*
+
+# Database
+instance/

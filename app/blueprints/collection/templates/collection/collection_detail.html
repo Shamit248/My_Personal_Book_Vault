@@ -64,19 +64,22 @@
           <span class="detail-label">Finished</span>
           <span>{{ ub.end_date or '—' }}</span>
         </div>
-        <div class="book-detail-item">
-          <span class="detail-label">Progress</span>
-          <span>
-            {% if ub.current_page and ub.book.page_count and ub.book.page_count > 0 %}
-              {{ ub.current_page }} / {{ ub.book.page_count }} pages
-              {% set pct = ((ub.current_page / ub.book.page_count) * 100)|round %}
-{% set pct = [pct, 100]|min %}
-<div class="progress-bar">
-  <div class="progress-fill" style="width: {{ pct }} %"></div>
+       <div class="book-detail-item form-full">
+  <span class="detail-label">Progress</span>
+  {% if ub.current_page and ub.book.page_count and ub.book.page_count > 0 %}
+    {% set pct = ((ub.current_page / ub.book.page_count) * 100)|round|int %}
+    {% set pct = [pct, 100]|min %}
+    <span>{{ ub.current_page }} / {{ ub.book.page_count }} pages</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
+      <div class="progress-bar" style="flex:1;max-width:200px;">
+        <div class="progress-fill" style="width:{{ pct }}%"></div>
+      </div>
+      <span style="font-size:11px;color:#2d7a52;font-weight:600;">{{ pct }}%</span>
+    </div>
+  {% else %}
+    <span>—</span>
+  {% endif %}
 </div>
-            {% else %}—{% endif %}
-          </span>
-        </div>
         <div class="book-detail-item">
           <span class="detail-label">Genre</span>
           <span>{{ ub.book.genre or '—' }}</span>
@@ -99,7 +102,7 @@
             action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
             onsubmit="return confirm('Remove this book?')">
         <button type="submit" class="action-btn btn-del">
-          <i class="ti ti-trash"></i>
+          <i class="ti ti-trash"></i>Delete
         </button>
       </form>
     </div>

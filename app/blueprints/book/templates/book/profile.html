@@ -1,0 +1,50 @@
+{% extends "book/base.html" %}
+{% block title %}Profile — Book Vault{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ current_user.username }}</h1>
+    <p class="page-sub">{{ current_user.email }}</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <i class="ti ti-books stat-icon"></i>
+    <p class="stat-label">Total Books</p>
+    <p class="stat-val">{{ total }}</p>
+  </div>
+  <div class="stat-card">
+    <i class="ti ti-check stat-icon"></i>
+    <p class="stat-label">Completed</p>
+    <p class="stat-val green">{{ completed }}</p>
+  </div>
+  <div class="stat-card">
+    <i class="ti ti-book stat-icon"></i>
+    <p class="stat-label">Reading</p>
+    <p class="stat-val blue">{{ reading }}</p>
+  </div>
+  <div class="stat-card">
+    <i class="ti ti-bookmark stat-icon"></i>
+    <p class="stat-label">Wishlist</p>
+    <p class="stat-val amber">{{ wishlist }}</p>
+  </div>
+</div>
+
+<div class="form-wrap" style="margin-top:1.5rem;">
+  <p class="form-title">Account Details</p>
+
+  <div class="book-details-grid">
+    <div class="book-detail-item">
+      <span class="detail-label">Username</span>
+      <span>{{ current_user.username }}</span>
+    </div>
+    <div class="book-detail-item">
+      <span class="detail-label">Email</span>
+      <span>{{ current_user.email }}</span>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

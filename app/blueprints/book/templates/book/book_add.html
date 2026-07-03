@@ -39,21 +39,21 @@
       </div>
 
       <div class="field">
-        <label for="genre">Genre</label>
-        <div class="input-wrap">
-          <select name="genre" id="genre" class="select-input">
-            <option value="">— Select genre —</option>
-            <option>Fantasy</option>
-            <option>Fiction</option>
-            <option>Programming</option>
-            <option>Science Fiction</option>
-            <option>Biography</option>
-            <option>Self Help</option>
-            <option>History</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
+  <label for="genre">Genre</label>
+  <div class="input-wrap">
+    <select name="genre" id="genre" class="select-input">
+      <option value="">— Select genre —</option>
+      <option>Fantasy</option>
+      <option>Fiction</option>
+      <option>Programming</option>
+      <option>Science Fiction</option>
+      <option>Biography</option>
+      <option>Self Help</option>
+      <option>History</option>
+      <option>Other</option>
+    </select>
+  </div>
+</div>
 
       <div class="field">
         <label for="page_count">Total Pages <span style="color:#c03030">*</span></label>
@@ -74,22 +74,26 @@
       </div>
 
       <div class="field form-full">
-        <label for="description">Description <span class="optional">(optional)</span></label>
-        <textarea name="description" id="description"
-                  placeholder="A short description of the book…" rows="3"></textarea>
-      </div>
-
+  <label for="description">Description <span class="optional">(optional)</span></label>
+  <textarea name="description" id="description"
+            placeholder="A short description of the book…"
+            rows="4" style="width:100%;resize:vertical;"></textarea>
+</div>
       <div class="field form-full">
-        <label for="file">Cover Image <span class="optional">(optional — PNG, JPG)</span></label>
-        <input type="file" name="file" id="file"
-               accept=".png,.jpg,.jpeg,image/png,image/jpeg">
-      </div>
+  <label class="form-label">Cover Image <span class="optional">(optional — PNG, JPG)</span></label>
+  <div class="input-group">
+    <input type="file" name="file" id="file"
+           class="form-control"
+           accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+  </div>
+  <small class="text-muted">Max recommended size: 2MB</small>
+</div>
 
-    </div>
+<button type="submit" class="btn w-100 mt-3"
+        style="background:#2d7a52;color:#fff;font-weight:600;padding:12px;border-radius:10px;font-size:15px;">
+  <i class="ti ti-arrow-right"></i> Continue to Reading Details
+</button>
 
-    <button type="submit" class="btn-submit">
-      <i class="ti ti-arrow-right"></i> Continue to Reading Details
-    </button>
 
   </form>
 </div>

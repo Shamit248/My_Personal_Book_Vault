@@ -6,7 +6,7 @@
   <title>{% block title %}My Personal Book Vault{% endblock %}</title>
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="icon" type="image/png" href="/favicon.ico/faviconlogo.png">
+  <link rel="icon" type="image/png" href="/favicon.ico/bookvault_logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
@@ -71,10 +71,11 @@
 </a>
 
       <span class="nav-section">Account</span>
-      <a href="#" class="nav-item">
-        <i class="ti ti-user" aria-hidden="true"></i>
-        {{ current_user.username }}
-      </a>
+<a href="{{ url_for('book.profile') }}"
+   class="nav-item {% if request.endpoint == 'book.profile' %}active{% endif %}">
+  <i class="ti ti-user" aria-hidden="true"></i>
+  {{ current_user.username }}
+</a>
 
       <div class="sidebar-footer">
         <a href="{{ url_for('book.logout') }}" class="nav-item nav-item-danger">

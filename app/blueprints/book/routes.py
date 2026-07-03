@@ -90,7 +90,7 @@ def book_add():
         flash("This book is already in your library.", "warning")
         return redirect(url_for("book.home"))
 
-    return redirect(url_for("book.userbook_details", bid=book_detail.bid,collection=collection))
+    return redirect(url_for("book.userbook_details", bid=book_detail.bid))
         
 @book.route('/userbook_details/<int:bid>',methods=['GET','POST'])
 @login_required
@@ -163,17 +163,30 @@ def userbook_delete(uid):
     db.session.commit()
     flash(f"{title} removed from the library","success")
     return redirect(url_for("book.home"))
+
+@book.route('/profile')
+@login_required
+def profile():
+    total     = Userbook.query.filter_by(pid=current_user.pid).count()
+    completed = Userbook.query.filter_by(pid=current_user.pid, status="Completed").count()
+    reading   = Userbook.query.filter_by(pid=current_user.pid, status="Reading").count()
+    wishlist  = Userbook.query.filter_by(pid=current_user.pid, status="Wishlist").count()
+    return render_template("book/profile.html",
+                           total=total, completed=completed,
+                           reading=reading, wishlist=wishlist)
         
 
 @book.route('/logout')
 @login_required
 def logout():
+    name=current_user.username
     record = History.query.filter_by(
     username=current_user.username).order_by(History.login_time.desc()).first()
     if record:
         record.logout_time = datetime.now()
         db.session.commit()
     logout_user()
+    flash(f"{name},Logged Out","success")
     return redirect(url_for("auth.index")) 
         
         

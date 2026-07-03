@@ -10,6 +10,7 @@ auth=Blueprint('auth',__name__,template_folder='templates')
 def index():
     
     if current_user.is_authenticated:
+        flash(f"Welcome Back,{current_user.username}","success")
         return redirect(url_for("book.home"))
     
     if request.method=='GET':
@@ -27,9 +28,11 @@ def index():
             login=History(username=user.username,login_time=datetime.now(),logout_time=None)
             db.session.add(login)
             db.session.commit()
+            flash(f"Welcome,{current_user.username}","success")
             return redirect(url_for("book.home"))
         else:
-            return "Invalid Credential"
+            flash("Invalid Credential","danger")
+            return render_template("auth/index.html")
         
 @auth.route('/register',methods=["GET","POST"])
 def register():
