@@ -1,37 +1,48 @@
-{%extends "book/base.html" %}
-{% block title%}Book Add{%endblock%}
-{%block content%}
-<h1>Add New Book</h1>
+{% extends "book/base.html" %}
+{% block title %}Add Book — Book Vault{% endblock %}
+{% block content %}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="flash flash-{{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Add New Book</h1>
+    <p class="page-sub">Fill in the details to add a book to your vault</p>
+  </div>
+</div>
 
-    <form action="{{ url_for('book.book_add') }}" method="POST" enctype="multipart/form-data">
+<div class="form-wrap">
+  <form action="{{ url_for('book.book_add') }}" method="POST" enctype="multipart/form-data">
 
-        <label>Title</label><br>
-        <input type="text" name="title" required>
-        <br><br>
+    <div class="form-grid">
 
-        <label>Author</label><br>
-        <input type="text" name="author" required>
-        <br><br>
+      <div class="field">
+        <label for="title">Title <span style="color:#c03030">*</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-book input-icon"></i>
+          <input type="text" name="title" id="title" placeholder="Book title" required>
+        </div>
+      </div>
 
-        <label>Language</label><br>
-        <input type="text" name="language" required>
-        <br><br>
+      <div class="field">
+        <label for="author">Author <span style="color:#c03030">*</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-user input-icon"></i>
+          <input type="text" name="author" id="author" placeholder="Author name" required>
+        </div>
+      </div>
 
-        <label>Genre</label><br>
-        <select name="genre">
+      <div class="field">
+        <label for="language">Language <span style="color:#c03030">*</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-language input-icon"></i>
+          <input type="text" name="language" id="language" placeholder="e.g. English" required>
+        </div>
+      </div>
 
-            <option value="">Select Genre</option>
-
+      <div class="field">
+        <label for="genre">Genre</label>
+        <div class="input-wrap">
+          <select name="genre" id="genre" class="select-input">
+            <option value="">— Select genre —</option>
             <option>Fantasy</option>
             <option>Fiction</option>
             <option>Programming</option>
@@ -40,33 +51,46 @@
             <option>Self Help</option>
             <option>History</option>
             <option>Other</option>
-        </select>
+          </select>
+        </div>
+      </div>
 
-        <br><br>
+      <div class="field">
+        <label for="page_count">Total Pages <span style="color:#c03030">*</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-files input-icon"></i>
+          <input type="number" name="page_count" id="page_count"
+                 placeholder="e.g. 320" min="1" required>
+        </div>
+      </div>
 
-        <label>Total Pages</label><br>
-        <input type="number" name="page_count" required>
-        <br><br>
+      <div class="field">
+        <label for="published_year">Published Year <span class="optional">(optional)</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-calendar input-icon"></i>
+          <input type="number" name="published_year" id="published_year"
+                 placeholder="e.g. 2021" min="1000" max="2099">
+        </div>
+      </div>
 
-        <label>Published Year</label><br>
-        <input type="number" name="published_year">
-        <br><br>
+      <div class="field form-full">
+        <label for="description">Description <span class="optional">(optional)</span></label>
+        <textarea name="description" id="description"
+                  placeholder="A short description of the book…" rows="3"></textarea>
+      </div>
 
-        <label>Description</label><br>
+      <div class="field form-full">
+        <label for="file">Cover Image <span class="optional">(optional — PNG, JPG)</span></label>
+        <input type="file" name="file" id="file"
+               accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+      </div>
 
-        <textarea
-            name="description"
-            rows="5"
-            cols="50"></textarea>
+    </div>
 
-        <br><br>
-    <label for="file">Book Cover</label><br>
-    <input type="file"
-           name="file"
-           id="file"
-           accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+    <button type="submit" class="btn-submit">
+      <i class="ti ti-arrow-right"></i> Continue to Reading Details
+    </button>
 
-    <br><br>
-
-    <button type="submit">Continue</button>
-{%endblock%}
+  </form>
+</div>
+{% endblock %}

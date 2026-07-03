@@ -1,58 +1,101 @@
-{%extends "book/base.html" %}
-{% block title%}Userbook Details{%endblock%}
-{%block content%}
-<h1>Add New Book</h1>
+{% extends "book/base.html" %}
+{% block title %}Reading Details — {{ book_detail.title }}{% endblock %}
+{% block content %}
 
-    <form action="{{ url_for('book.userbook_details',bid=book_detail.bid) }}" method="POST">
-
-        <label>Status</label><br>
-    <select name="status" required>
-        <option value="">-- Select Status --</option>
-        <option value="To Read">Wishlist</option>
-        <option value="Reading">Reading</option>
-        <option value="Completed">Completed</option>
-    </select>
-
-    <br><br>
-
-    <label>Current Page</label><br>
-    <input type="number" name="current_page" min="0" value="0">
-
-    <br><br>
-
-    <div class="field">
-  <label for="cid">Collection <span class="optional">(optional)</span></label>
-  <div class="input-wrap">
-    <i class="ti ti-folder input-icon" aria-hidden="true"></i>
-    <select name="cid" id="cid" class="select-input">
-      <option value="">— No collection —</option>
-      {% for col in collection %}
-        <option value="{{ col.cid }}">{{ col.collection_name }}</option>
-      {% endfor %}
-    </select>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Reading Details</h1>
+    <p class="page-sub">How are you reading <strong>{{ book_detail.title }}</strong>?</p>
   </div>
 </div>
 
-    <br><br>
+<div class="form-wrap">
 
-    <label>Rating</label><br>
-    <select name="rating">
-        <option value="0">No Rating</option>
-        <option value="1">⭐ 1</option>
-        <option value="2">⭐⭐ 2</option>
-        <option value="3">⭐⭐⭐ 3</option>
-        <option value="4">⭐⭐⭐⭐ 4</option>
-        <option value="5">⭐⭐⭐⭐⭐ 5</option>
-    </select>
+  <div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid #f0ede8;">
+    {% if book_detail.cover_image %}
+      <img src="{{ url_for('static', filename=book_detail.cover_image) }}"
+           style="width:60px;height:90px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+    {% else %}
+      <div style="width:60px;height:90px;background:#e8f0ec;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="ti ti-book" style="font-size:24px;color:#2d7a52;"></i>
+      </div>
+    {% endif %}
+    <div>
+      <p style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:3px;">{{ book_detail.title }}</p>
+      <p style="font-size:13px;color:#999;">by {{ book_detail.author }}</p>
+      {% if book_detail.genre %}
+        <span class="badge badge-wishlist" style="margin-top:6px;">{{ book_detail.genre }}</span>
+      {% endif %}
+    </div>
+  </div>
 
-    <br><br>
+  <form action="{{ url_for('book.userbook_details', bid=book_detail.bid) }}" method="POST">
 
-    <label>Personal Note</label><br>
-    <textarea name="note" rows="5" cols="40"></textarea>
+    <div class="form-grid">
 
-    <br><br>
+      <div class="field">
+        <label for="status">Status <span style="color:#c03030">*</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-bookmark input-icon"></i>
+          <select name="status" id="status" class="select-input" required>
+            <option value="">— Select status —</option>
+            <option value="Wishlist">Wishlist</option>
+            <option value="Reading">Reading</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
 
-    <button type="submit">Save Book</button>
+      <div class="field">
+        <label for="current_page">Current Page <span class="optional">(optional)</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-bookmark-filled input-icon"></i>
+          <input type="number" name="current_page" id="current_page"
+                 placeholder="e.g. 42" min="0">
+        </div>
+      </div>
 
-    </form>
-{%endblock%}
+      <div class="field">
+        <label for="cid">Collection <span class="optional">(optional)</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-folder input-icon"></i>
+          <select name="cid" id="cid" class="select-input">
+            <option value="">— No collection —</option>
+            {% for col in collections %}
+              <option value="{{ col.cid }}">{{ col.collection_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="rating">Rating <span class="optional">(optional)</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-star input-icon"></i>
+          <select name="rating" id="rating" class="select-input">
+            <option value="">— No rating —</option>
+            <option value="1">★ 1 — Poor</option>
+            <option value="2">★★ 2 — Fair</option>
+            <option value="3">★★★ 3 — Good</option>
+            <option value="4">★★★★ 4 — Great</option>
+            <option value="5">★★★★★ 5 — Excellent</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field form-full">
+        <label for="note">Personal Note <span class="optional">(optional)</span></label>
+        <textarea name="note" id="note"
+                  placeholder="Your thoughts, quotes, or reminders about this book…"
+                  rows="3"></textarea>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn-submit">
+      <i class="ti ti-check"></i> Save to Library
+    </button>
+
+  </form>
+</div>
+{% endblock %}
