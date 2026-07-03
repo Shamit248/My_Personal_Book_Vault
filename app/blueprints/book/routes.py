@@ -40,7 +40,7 @@ def book_add():
 
     file = request.files.get("file")
 
-    cover_path = None
+    cover_path=None
 
     if file and file.filename:
         
