@@ -932,6 +932,7 @@ tr:hover td { background: #fafaf8; }
   padding-left: 52px;
 }
 
+
 .activity-title {
   font-size: 15px;
   font-weight: 600;
@@ -986,3 +987,20 @@ tr:hover td { background: #fafaf8; }
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.select-input option:checked,
+.select-input option:hover {
+  background: #2d7a52;
+  color: #fff;
+}
+
+.star-rating { display: flex; gap: 6px; margin-top: 4px; }
+.star-rating .star {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.15s, transform 0.1s;
+}
+.star-rating .star:hover,
+.star-rating .star.active { color: #e8a030; }
+.star-rating .star:hover { transform: scale(1.15); }
