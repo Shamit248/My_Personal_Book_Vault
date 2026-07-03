@@ -1,0 +1,64 @@
+{% extends "book/base.html" %}
+{% block title %}Search Friends | My Personal Book Vault{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Find Friends</h1>
+    <p class="page-sub">Search users by username and send friend requests.</p>
+  </div>
+</div>
+
+<form method="GET" action="{{ url_for('friends.search_users') }}" class="search-bar friends-search-form">
+  <i class="ti ti-search"></i>
+  <input type="text" name="q" placeholder="Search by username..." value="{{ query }}">
+  <button type="submit" class="btn-inline-search">Search</button>
+</form>
+
+{% if query %}
+  {% if results %}
+    <div class="friends-results">
+      {% for item in results %}
+      <div class="friend-card">
+        <div class="friend-avatar">
+          {{ item.user.username[0]|upper }}
+        </div>
+
+        <div class="friend-info">
+          <h3>{{ item.user.username }}</h3>
+          <p>{{ item.user.email }}</p>
+        </div>
+
+        <div class="friend-card-actions">
+          {% if item.relation_status == "accepted" %}
+            <span class="friend-pill friend-pill-success">Friends</span>
+          {% elif item.relation_status == "pending" and item.request_direction == "sent" %}
+            <span class="friend-pill friend-pill-pending">Request Sent</span>
+          {% elif item.relation_status == "pending" and item.request_direction == "received" %}
+            <a href="{{ url_for('friends.requests_page') }}" class="action-btn btn-edit">
+              <i class="ti ti-user-check"></i> View Request
+            </a>
+          {% else %}
+            <form method="POST" action="{{ url_for('friends.send_request', user_id=item.user.pid) }}">
+              <button type="submit" class="btn-add btn-small">
+                <i class="ti ti-user-plus"></i> Add Friend
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <i class="ti ti-search-off"></i>
+      <p>No users found for "{{ query }}".</p>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="empty-state">
+    <i class="ti ti-user-search"></i>
+    <p>Search by username to find readers and send friend requests.</p>
+  </div>
+{% endif %}
+{% endblock %}

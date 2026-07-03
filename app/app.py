@@ -22,6 +22,7 @@ def create_app():
     from app.blueprints.auth.modules import Credential
     from app.blueprints.book.modules import Book, Userbook
     from app.blueprints.collection.modules import Collection
+    from app.blueprints.friends.modules import Friendship
     
     @login_manager.user_loader
     def load_user(pid):
@@ -38,11 +39,13 @@ def create_app():
     from app.blueprints.auth.routes import auth
     from app.blueprints.book.routes import book
     from app.blueprints.collection.routes import collection
+    from app.blueprints.friends.routes import friends
     
     
     app.register_blueprint(auth,url_prefix='/')
     app.register_blueprint(book,url_prefix='/book')
     app.register_blueprint(collection,url_prefix='/collection')
+    app.register_blueprint(friends,url_prefix="/friends")
     
     return app
     

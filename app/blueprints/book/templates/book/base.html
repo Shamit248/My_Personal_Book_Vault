@@ -55,6 +55,20 @@
   </div>
 </form>
 
+<span class="nav-section">Social</span>
+<a href="{{ url_for('friends.friends_list') }}"
+   class="nav-item {% if request.endpoint and request.endpoint.startswith('friends.') %}active{% endif %}">
+  <i class="ti ti-users" aria-hidden="true"></i> Friends
+</a>
+<a href="{{ url_for('friends.activity_feed') }}"
+   class="nav-item {% if request.endpoint == 'friends.activity_feed' %}active{% endif %}">
+  <i class="ti ti-activity" aria-hidden="true"></i> Activity
+</a>
+<a href="{{ url_for('friends.requests_page') }}"
+   class="nav-item {% if request.endpoint == 'friends.requests_page' %}active{% endif %}">
+  <i class="ti ti-user-plus" aria-hidden="true"></i> Requests
+</a>
+
       <span class="nav-section">Account</span>
       <a href="#" class="nav-item">
         <i class="ti ti-user" aria-hidden="true"></i>

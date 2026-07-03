@@ -1,0 +1,40 @@
+{% extends "book/base.html" %}
+{% block title %}Friends | My Personal Book Vault{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Friends</h1>
+    <p class="page-sub">View your friend list and discover their reading activity.</p>
+  </div>
+  <a href="{{ url_for('friends.search_users') }}" class="btn-add">
+    <i class="ti ti-search"></i> Find Friends
+  </a>
+</div>
+
+{% if friends_list %}
+<div class="friends-grid">
+  {% for friend in friends_list %}
+  <div class="friend-card">
+    <div class="friend-avatar">
+      {{ friend.username[0]|upper }}
+    </div>
+    <div class="friend-info">
+      <h3>{{ friend.username }}</h3>
+      <p>{{ friend.email }}</p>
+    </div>
+    <div class="friend-card-actions">
+      <a href="{{ url_for('friends.activity_feed') }}" class="action-btn btn-edit">
+        <i class="ti ti-activity"></i> Activity
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="ti ti-users"></i>
+  <p>You have no friends yet. Search users and send your first request.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "book/base.html" %}
+{% block title %}Friends Activity | My Personal Book Vault{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Friends Activity</h1>
+    <p class="page-sub">See what your friends are reading and completing.</p>
+  </div>
+</div>
+
+{% if activities %}
+<div class="activity-feed">
+  {% for item in activities %}
+  <div class="activity-card">
+    <div class="activity-top">
+      <div class="friend-avatar small">
+        {{ item.user.username[0]|upper }}
+      </div>
+      <div>
+        <h3 class="activity-title">
+          {{ item.user.username }}
+          {% if item.status == "Completed" %}
+            completed
+          {% else %}
+            is currently reading
+          {% endif %}
+          <span class="activity-book-title">{{ item.book.title }}</span>
+        </h3>
+        <p class="activity-author">by {{ item.book.author }}</p>
+      </div>
+    </div>
+
+    <div class="activity-body">
+      <div class="book-meta">
+        {% if item.status == "Completed" %}
+          <span class="badge badge-completed">Completed</span>
+        {% else %}
+          <span class="badge badge-reading">Currently Reading</span>
+        {% endif %}
+
+        {% if item.rating %}
+          <span class="stars">
+            {% for _ in range(item.rating) %}★{% endfor %}
+          </span>
+        {% endif %}
+      </div>
+
+      {% if item.status == "Completed" and item.end_date %}
+      <p class="activity-date">Finished on {{ item.end_date.strftime('%d %b %Y') }}</p>
+      {% elif item.start_date %}
+      <p class="activity-date">Started on {{ item.start_date.strftime('%d %b %Y') }}</p>
+      {% endif %}
+
+      {% if item.note and item.note != "None" %}
+      <div class="activity-note">
+        <strong>Review:</strong> {{ item.note }}
+      </div>
+      {% endif %}
+
+      {% if item.book.description and item.book.description != "None" %}
+      <p class="activity-description">{{ item.book.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="ti ti-activity-heartbeat"></i>
+  <p>No friend activity yet. Add friends to see reading updates here.</p>
+</div>
+{% endif %}
+{% endblock %}

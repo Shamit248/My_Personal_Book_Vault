@@ -1,0 +1,48 @@
+{% extends "book/base.html" %}
+{% block title %}Friend Requests | My Personal Book Vault{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Friend Requests</h1>
+    <p class="page-sub">Review requests sent to you.</p>
+  </div>
+</div>
+
+{% if incoming_requests %}
+<div class="request-list">
+  {% for req in incoming_requests %}
+  <div class="request-card">
+    <div class="friend-avatar">
+      {{ req.sender.username[0]|upper }}
+    </div>
+
+    <div class="request-content">
+      <h3>{{ req.sender.username }}</h3>
+      <p>{{ req.sender.email }}</p>
+      <span class="request-meta">Sent on {{ req.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+    </div>
+
+    <div class="request-actions">
+      <form method="POST" action="{{ url_for('friends.accept_request', fid=req.fid) }}">
+        <button type="submit" class="btn-add btn-small">
+          <i class="ti ti-check"></i> Accept
+        </button>
+      </form>
+
+      <form method="POST" action="{{ url_for('friends.reject_request', fid=req.fid) }}">
+        <button type="submit" class="action-btn btn-del">
+          <i class="ti ti-x"></i> Reject
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="ti ti-mail-opened"></i>
+  <p>No pending friend requests right now.</p>
+</div>
+{% endif %}
+{% endblock %}

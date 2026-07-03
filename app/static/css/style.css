@@ -790,3 +790,199 @@ tr:hover td { background: #fafaf8; }
   font-size: 13px;
 }
 .nav-create-btn:hover { background: #236040; }
+
+/* ── Friends module ─────────────────────── */
+.friends-grid,
+.friends-results,
+.request-list,
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.friend-card,
+.request-card,
+.activity-card {
+  background: #fff;
+  border: 0.5px solid #e2e0d8;
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.friend-card:hover,
+.request-card:hover,
+.activity-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.friend-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e8f5f0;
+  color: #2d7a52;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.friend-avatar.small {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.friend-info,
+.request-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-info h3,
+.request-content h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.friend-info p,
+.request-content p,
+.activity-author,
+.activity-date,
+.request-meta {
+  font-size: 13px;
+  color: #888;
+}
+
+.friend-card-actions,
+.request-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.friend-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.friend-pill-success {
+  background: #edf9f1;
+  color: #2d7a52;
+}
+
+.friend-pill-pending {
+  background: #fff6e8;
+  color: #b2761b;
+}
+
+.btn-small {
+  width: auto;
+  margin-bottom: 0;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.friends-search-form {
+  margin-bottom: 1.25rem;
+}
+
+.btn-inline-search {
+  border: none;
+  background: #2d7a52;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-inline-search:hover {
+  background: #236040;
+}
+
+.activity-card {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.activity-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.activity-body {
+  width: 100%;
+  padding-left: 52px;
+}
+
+.activity-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.5;
+  margin-bottom: 3px;
+}
+
+.activity-book-title {
+  color: #2d7a52;
+}
+
+.activity-note {
+  margin-top: 0.75rem;
+  background: #f7faf8;
+  border-left: 3px solid #2d7a52;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.activity-description {
+  margin-top: 0.75rem;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.2rem;
+  }
+
+  .friend-card,
+  .request-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .friend-card-actions,
+  .request-actions {
+    width: 100%;
+  }
+
+  .activity-body {
+    padding-left: 0;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
