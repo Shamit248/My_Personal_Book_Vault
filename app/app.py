@@ -10,7 +10,7 @@ load_dotenv()
 def create_app():
     app=Flask(__name__,template_folder="templates",static_folder='static',static_url_path='/')
     app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///./test.db'
-    app.config['SECRET_KEY']=os.getenv("SECRET_KEY")
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "book-vault-dev-secret-key-9f8a362-ust-project")
     
     db.init_app(app)
     bcrypt.init_app(app)

@@ -1,72 +1,107 @@
 {% extends "base.html" %}
-{% block title %}Sign in — My Personal Book Vault{% endblock %}
+{% block title %}Sign In — My Personal Book Vault{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-
-  <div class="auth-brand">
-    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="38" height="38" rx="9" fill="#2d5a3d"/>
-      <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.9"/>
-      <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
-      <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.5"/>
-    </svg>
-    <span class="auth-brand-name">My Personal <strong>Book Vault</strong></span>
-  </div>
-
-  <div class="auth-card">
-    <h1 class="auth-title">Welcome back</h1>
-    <p class="auth-sub">Sign in to continue reading</p>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <div class="flash flash-{{ category }}">
-          <i class="ti ti-alert-circle"></i> {{ message }}
-        </div>
-      {% endfor %}
-    {% endwith %}
-
-    <form method="POST" action="{{ url_for('auth.index') }}" novalidate>
-      <div class="field">
-  <label for="email">Email address</label>
-  <div class="input-wrap">
-    <i class="ti ti-mail input-icon" aria-hidden="true"></i>
-    <input type="email" name="email" id="email"
-           placeholder="name@example.com"
-           value="{{ email or '' }}"
-           autocomplete="email" required>
-  </div>
-</div>
-
-<div class="field">
-  <label for="password">Password</label>
-  <div class="input-wrap">
-    <i class="ti ti-lock input-icon" aria-hidden="true"></i>
-    <input type="password" name="password" id="password"
-           placeholder="Your password"
-           autocomplete="current-password" required>
-    <button type="button" class="eye-btn" onclick="togglePwd()" aria-label="Show password">
-      <i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i>
-    </button>
-  </div>
-</div>
-      <div class="field-row">
-        <label class="checkbox-label">
-          <input type="checkbox" name="remember" {% if email %}checked{% endif %}>
-          Remember me
-        </label>
+  <div class="auth-container">
+    
+    <div class="auth-brand-center">
+      <div class="auth-logo-badge">
+        <svg width="36" height="36" viewBox="0 0 38 38" fill="none" aria-hidden="true">
+          <rect width="38" height="38" rx="10" fill="#246e47"/>
+          <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.95"/>
+          <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.75"/>
+          <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.5"/>
+        </svg>
       </div>
-      <button type="submit" class="btn-primary">Sign in</button>
-    </form>
+      <div class="auth-brand-heading">
+        <span class="auth-brand-kicker">Personal Archive</span>
+        <span class="auth-brand-name">Book <strong>Vault</strong></span>
+      </div>
+    </div>
 
-    <p class="auth-footer">No account? <a href="{{ url_for('auth.register') }}">Create one</a></p>
+    <div class="auth-card">
+      <header class="auth-card-header">
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-sub">Sign in to access your library, reading logs, and collections.</p>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="auth-flash-stack" role="region" aria-label="Alerts">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}" role="alert">
+                <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.index') }}" class="auth-form" novalidate>
+        <div class="field">
+          <label for="email" class="field-label">Email address</label>
+          <div class="input-wrap">
+            <i class="ti ti-mail input-icon" aria-hidden="true"></i>
+            <input type="email" name="email" id="email"
+                   class="form-control-input"
+                   placeholder="name@example.com"
+                   value="{{ email or '' }}"
+                   autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row">
+            <label for="password" class="field-label">Password</label>
+          </div>
+          <div class="input-wrap">
+            <i class="ti ti-lock input-icon" aria-hidden="true"></i>
+            <input type="password" name="password" id="password"
+                   class="form-control-input password-input"
+                   placeholder="Enter your password"
+                   autocomplete="current-password" required>
+            <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility('password', 'eye-icon')" aria-label="Toggle password visibility">
+              <i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-row-split">
+          <label class="custom-checkbox">
+            <input type="checkbox" name="remember" id="remember" {% if email %}checked{% endif %}>
+            <span class="checkbox-indicator"></span>
+            <span class="checkbox-text">Keep me signed in</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary-auth">
+          <span>Sign In to Vault</span>
+          <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </button>
+      </form>
+
+      <div class="auth-card-footer">
+        <p>Don't have a vault account yet? <a href="{{ url_for('auth.register') }}">Create your account</a></p>
+      </div>
+    </div>
+
+    <div class="auth-security-badge">
+      <i class="ti ti-shield-check" aria-hidden="true"></i>
+      <span>Secure session storage & private personal book catalog</span>
+    </div>
+
   </div>
 </div>
+
 <script>
-function togglePwd() {
-  const inp = document.getElementById('password');
-  const icon = document.getElementById('eye-icon');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  icon.className = inp.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
+function togglePasswordVisibility(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (!inp || !icon) return;
+  const isPwd = inp.type === 'password';
+  inp.type = isPwd ? 'text' : 'password';
+  icon.className = isPwd ? 'ti ti-eye-off' : 'ti ti-eye';
 }
 </script>
 {% endblock %}

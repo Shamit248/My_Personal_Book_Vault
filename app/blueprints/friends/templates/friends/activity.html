@@ -1,74 +1,115 @@
 {% extends "book/base.html" %}
-{% block title %}Friends Activity | My Personal Book Vault{% endblock %}
+{% block title %}Friends Activity — Book Vault{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Friends Activity</h1>
-    <p class="page-sub">See what your friends are reading and completing.</p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Community</span>
+      <span class="breadcrumb-separator">/</span>
+      <span>Activity Feed</span>
+    </div>
+    <h1 class="page-title">Friends Activity Feed</h1>
+    <p class="page-sub">Live updates on books your friends are currently reading, finishing, and reviewing.</p>
+  </div>
+  <div class="page-actions">
+    <a href="{{ url_for('friends.search_users') }}" class="btn-secondary-action">
+      <i class="ti ti-user-plus" aria-hidden="true"></i>
+      <span>Add Friends</span>
+    </a>
   </div>
 </div>
 
 {% if activities %}
-<div class="activity-feed">
+<div class="activity-timeline-feed">
   {% for item in activities %}
-  <div class="activity-card">
-    <div class="activity-top">
-      <div class="friend-avatar small">
+  <article class="activity-timeline-card">
+    <div class="activity-timeline-header">
+      <div class="activity-avatar">
         {{ item.user.username[0]|upper }}
       </div>
-      <div>
-        <h3 class="activity-title">
-          {{ item.user.username }}
+      <div class="activity-header-meta">
+        <div class="activity-headline">
+          <span class="activity-username">{{ item.user.username }}</span>
           {% if item.status == "Completed" %}
-            completed
+            <span class="activity-action-label completed">completed reading</span>
           {% else %}
-            is currently reading
+            <span class="activity-action-label reading">is currently reading</span>
           {% endif %}
-          <span class="activity-book-title">{{ item.book.title }}</span>
-        </h3>
-        <p class="activity-author">by {{ item.book.author }}</p>
+          <span class="activity-book-highlight">« {{ item.book.title }} »</span>
+        </div>
+        <div class="activity-submeta">
+          <span class="activity-author-text">by {{ item.book.author }}</span>
+          {% if item.status == "Completed" and item.end_date %}
+            <span class="activity-bullet">•</span>
+            <span class="activity-date"><i class="ti ti-calendar-check" aria-hidden="true"></i> Finished on {{ item.end_date.strftime('%d %b %Y') }}</span>
+          {% elif item.start_date %}
+            <span class="activity-bullet">•</span>
+            <span class="activity-date"><i class="ti ti-calendar" aria-hidden="true"></i> Started on {{ item.start_date.strftime('%d %b %Y') }}</span>
+          {% endif %}
+        </div>
       </div>
-    </div>
 
-    <div class="activity-body">
-      <div class="book-meta">
+      <div class="activity-status-col">
         {% if item.status == "Completed" %}
-          <span class="badge badge-completed">Completed</span>
+          <span class="status-pill status-completed">
+            <span class="status-dot"></span> Completed
+          </span>
         {% else %}
-          <span class="badge badge-reading">Currently Reading</span>
-        {% endif %}
-
-        {% if item.rating %}
-          <span class="stars">
-            {% for _ in range(item.rating) %}★{% endfor %}
+          <span class="status-pill status-reading">
+            <span class="status-dot"></span> Reading
           </span>
         {% endif %}
       </div>
+    </div>
 
-      {% if item.status == "Completed" and item.end_date %}
-      <p class="activity-date">Finished on {{ item.end_date.strftime('%d %b %Y') }}</p>
-      {% elif item.start_date %}
-      <p class="activity-date">Started on {{ item.start_date.strftime('%d %b %Y') }}</p>
+    <div class="activity-timeline-body">
+      {% if item.rating and item.rating > 0 %}
+        <div class="activity-rating-row">
+          <span class="rating-label">Rating:</span>
+          <div class="rating-stars" aria-label="Rated {{ item.rating }} stars">
+            {% for _ in range(item.rating) %}<span class="star-filled">★</span>{% endfor %}{% for _ in range(5 - item.rating) %}<span class="star-empty">★</span>{% endfor %}
+          </div>
+        </div>
       {% endif %}
 
       {% if item.note and item.note != "None" %}
-      <div class="activity-note">
-        <strong>Review:</strong> {{ item.note }}
+      <div class="activity-review-quote">
+        <i class="ti ti-quote quote-icon" aria-hidden="true"></i>
+        <div class="quote-content">
+          <span class="quote-header">Friend's Review & Notes:</span>
+          <p>{{ item.note }}</p>
+        </div>
       </div>
       {% endif %}
 
       {% if item.book.description and item.book.description != "None" %}
-      <p class="activity-description">{{ item.book.description }}</p>
+      <div class="activity-synopsis-box">
+        <span class="synopsis-label"><i class="ti ti-info-circle" aria-hidden="true"></i> Book Synopsis:</span>
+        <p>{{ item.book.description }}</p>
+      </div>
       {% endif %}
     </div>
-  </div>
+  </article>
   {% endfor %}
 </div>
 {% else %}
-<div class="empty-state">
-  <i class="ti ti-activity-heartbeat"></i>
-  <p>No friend activity yet. Add friends to see reading updates here.</p>
+<div class="empty-state-card">
+  <div class="empty-illustration">
+    <div class="empty-icon-large">
+      <i class="ti ti-activity-heartbeat" aria-hidden="true"></i>
+    </div>
+  </div>
+  <h2 class="empty-title">No friend activity yet</h2>
+  <p class="empty-desc">When your friends log their reading milestones, ratings, and reviews, they will show up here on your timeline.</p>
+  <div class="empty-actions">
+    <a href="{{ url_for('friends.search_users') }}" class="btn-primary-action btn-large">
+      <i class="ti ti-user-plus" aria-hidden="true"></i>
+      <span>Find & Add Friends</span>
+    </a>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

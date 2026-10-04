@@ -1,38 +1,50 @@
 {% extends "book/base.html" %}
-{% block title %}Friend Requests | My Personal Book Vault{% endblock %}
+{% block title %}Friend Requests — Book Vault{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <div>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Community</span>
+      <span class="breadcrumb-separator">/</span>
+      <span>Friend Requests</span>
+    </div>
     <h1 class="page-title">Friend Requests</h1>
-    <p class="page-sub">Review requests sent to you.</p>
+    <p class="page-sub">Review and respond to pending invitations from other readers.</p>
   </div>
 </div>
 
 {% if incoming_requests %}
-<div class="request-list">
+<div class="requests-cards-stack">
   {% for req in incoming_requests %}
-  <div class="request-card">
-    <div class="friend-avatar">
+  <div class="request-action-card">
+    <div class="friend-user-avatar">
       {{ req.sender.username[0]|upper }}
     </div>
 
-    <div class="request-content">
-      <h3>{{ req.sender.username }}</h3>
-      <p>{{ req.sender.email }}</p>
-      <span class="request-meta">Sent on {{ req.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+    <div class="request-action-details">
+      <div class="request-sender-row">
+        <h3 class="request-sender-name">{{ req.sender.username }}</h3>
+        <span class="request-pending-tag"><i class="ti ti-clock" aria-hidden="true"></i> Pending Invitation</span>
+      </div>
+      <p class="request-sender-email"><i class="ti ti-mail" aria-hidden="true"></i> {{ req.sender.email }}</p>
+      <span class="request-timestamp"><i class="ti ti-calendar" aria-hidden="true"></i> Sent on {{ req.created_at.strftime('%d %b %Y at %I:%M %p') }}</span>
     </div>
 
-    <div class="request-actions">
-      <form method="POST" action="{{ url_for('friends.accept_request', fid=req.fid) }}">
-        <button type="submit" class="btn-add btn-small">
-          <i class="ti ti-check"></i> Accept
+    <div class="request-button-group">
+      <form method="POST" action="{{ url_for('friends.accept_request', fid=req.fid) }}" style="display:inline;">
+        <button type="submit" class="btn-primary-action btn-small">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          <span>Accept</span>
         </button>
       </form>
 
-      <form method="POST" action="{{ url_for('friends.reject_request', fid=req.fid) }}">
-        <button type="submit" class="action-btn btn-del">
-          <i class="ti ti-x"></i> Reject
+      <form method="POST" action="{{ url_for('friends.reject_request', fid=req.fid) }}" style="display:inline;">
+        <button type="submit" class="btn-danger-outline btn-small">
+          <i class="ti ti-x" aria-hidden="true"></i>
+          <span>Decline</span>
         </button>
       </form>
     </div>
@@ -40,9 +52,20 @@
   {% endfor %}
 </div>
 {% else %}
-<div class="empty-state">
-  <i class="ti ti-mail-opened"></i>
-  <p>No pending friend requests right now.</p>
+<div class="empty-state-card">
+  <div class="empty-illustration">
+    <div class="empty-icon-large">
+      <i class="ti ti-mail-opened" aria-hidden="true"></i>
+    </div>
+  </div>
+  <h2 class="empty-title">No pending friend requests</h2>
+  <p class="empty-desc">You are all caught up! When other readers find your profile and send a request, it will appear right here.</p>
+  <div class="empty-actions">
+    <a href="{{ url_for('friends.search_users') }}" class="btn-primary-action">
+      <i class="ti ti-user-search" aria-hidden="true"></i>
+      <span>Find Readers</span>
+    </a>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

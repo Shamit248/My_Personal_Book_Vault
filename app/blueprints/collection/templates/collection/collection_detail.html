@@ -3,121 +3,160 @@
 {% block content %}
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">
-      <i class="ti ti-folder" aria-hidden="true"></i> {{ collection.collection_name }}
-    </h1>
-    <p class="page-sub">{{ books|length }} book{{ 's' if books|length != 1 }}</p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Collections</span>
+      <span class="breadcrumb-separator">/</span>
+      <span>{{ collection.collection_name }}</span>
+    </div>
+    <div class="collection-title-row">
+      <div class="collection-folder-badge">
+        <i class="ti ti-folder" aria-hidden="true"></i>
+      </div>
+      <div>
+        <h1 class="page-title">{{ collection.collection_name }}</h1>
+        <p class="page-sub">{{ books|length }} book{{ 's' if books|length != 1 }} curated in this vault collection</p>
+      </div>
+    </div>
   </div>
 
-  <div style="display:flex; gap:10px;">
-    <a href="{{ url_for('book.book_add') }}" class="btn-add">
-      <i class="ti ti-plus"></i> Add book
+  <div class="page-actions">
+    <a href="{{ url_for('book.book_add') }}" class="btn-primary-action">
+      <i class="ti ti-plus" aria-hidden="true"></i>
+      <span>Add Book</span>
     </a>
 
     <form method="POST"
           action="{{ url_for('collection.delete_collection', cid=collection.cid) }}"
-          onsubmit="return confirm('Delete this collection? Books will remain in your library.')">
-      <button type="submit" class="btn-logout">
-        <i class="ti ti-trash"></i> Remove collection
+          onsubmit="return confirm('Delete the collection &quot;{{ collection.collection_name }}&quot;? All books inside will remain safely in your vault.')"
+          style="display:inline;">
+      <button type="submit" class="btn-danger-outline" title="Delete this collection">
+        <i class="ti ti-trash" aria-hidden="true"></i>
+        <span>Delete Collection</span>
       </button>
     </form>
   </div>
 </div>
 
 {% if books %}
-<div class="book-list">
+<div class="book-cards-list">
   {% for ub in books %}
-  <div class="book-list-card">
+  <article class="book-card-horizontal">
 
-    <div class="book-cover">
+    <div class="book-card-cover-wrap">
       {% if ub.book.cover_image %}
         <img src="{{ url_for('static', filename=ub.book.cover_image) }}"
-             alt="{{ ub.book.title }}">
+             alt="Cover for {{ ub.book.title }}"
+             class="book-card-cover-img"
+             loading="lazy">
       {% else %}
-        <div class="cover-placeholder">
+        <div class="book-card-cover-fallback">
           <i class="ti ti-book" aria-hidden="true"></i>
         </div>
       {% endif %}
     </div>
 
-    <div class="book-info">
-      <h3 class="book-info-title">{{ ub.book.title }}</h3>
-      <p class="book-info-author">by {{ ub.book.author }}</p>
+    <div class="book-card-content">
+      <div class="book-card-header">
+        <div>
+          <div class="book-card-meta-tags">
+            <span class="status-pill status-{{ ub.status|lower }}">
+              <span class="status-dot"></span>
+              {{ ub.status }}
+            </span>
+            {% if ub.book.genre %}
+              <span class="genre-tag">{{ ub.book.genre }}</span>
+            {% endif %}
+          </div>
+          <h2 class="book-card-title">{{ ub.book.title }}</h2>
+          <p class="book-card-author">by {{ ub.book.author }}</p>
+        </div>
 
-      <div class="book-meta">
-        <span class="badge badge-{{ ub.status|lower }}">{{ ub.status }}</span>
-        {% if ub.rating %}
-          <span class="stars">
-            {% for i in range(ub.rating) %}★{% endfor %}
-            {% for i in range(5 - ub.rating) %}☆{% endfor %}
-          </span>
+        {% if ub.rating and ub.rating > 0 %}
+          <div class="rating-stars" aria-label="Rated {{ ub.rating }} out of 5 stars">
+            {% for i in range(ub.rating) %}<span class="star-filled">★</span>{% endfor %}{% for i in range(5 - ub.rating) %}<span class="star-empty">★</span>{% endfor %}
+          </div>
         {% endif %}
       </div>
 
-      <div class="book-details-grid">
-        <div class="book-detail-item">
-          <span class="detail-label">Started</span>
-          <span>{{ ub.start_date or '—' }}</span>
+      <div class="book-card-details-grid">
+        <div class="card-detail-item">
+          <span class="detail-label"><i class="ti ti-calendar-event" aria-hidden="true"></i> Started</span>
+          <span class="detail-val">{{ ub.start_date.strftime('%d %b %Y') if ub.start_date else '—' }}</span>
         </div>
-        <div class="book-detail-item">
-          <span class="detail-label">Finished</span>
-          <span>{{ ub.end_date or '—' }}</span>
+        <div class="card-detail-item">
+          <span class="detail-label"><i class="ti ti-circle-check" aria-hidden="true"></i> Finished</span>
+          <span class="detail-val">{{ ub.end_date.strftime('%d %b %Y') if ub.end_date else '—' }}</span>
         </div>
-       <div class="book-detail-item form-full">
-  <span class="detail-label">Progress</span>
-  {% if ub.current_page and ub.book.page_count and ub.book.page_count > 0 %}
-    {% set pct = ((ub.current_page / ub.book.page_count) * 100)|round|int %}
-    {% set pct = [pct, 100]|min %}
-    <span>{{ ub.current_page }} / {{ ub.book.page_count }} pages</span>
-    <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
-      <div class="progress-bar" style="flex:1;max-width:200px;">
-        <div class="progress-fill" style="width: {{ pct }} &percent;"></div>
-      </div>
-      <span style="font-size:11px;color:#2d7a52;font-weight:600;">{{ pct }}%</span>
-    </div>
-  {% else %}
-    <span>—</span>
-  {% endif %}
-</div>
-        <div class="book-detail-item">
-          <span class="detail-label">Genre</span>
-          <span>{{ ub.book.genre or '—' }}</span>
+
+        <div class="card-detail-item card-detail-span2">
+          <span class="detail-label"><i class="ti ti-bookmark" aria-hidden="true"></i> Reading Progress</span>
+          {% if ub.book.page_count and ub.book.page_count > 0 %}
+            {% set cur = ub.current_page or 0 %}
+            {% set pct = ((cur / ub.book.page_count) * 100)|round|int %}
+            {% set pct = [pct, 100]|min %}
+            <div class="progress-info-row">
+              <span class="detail-val">{{ cur }} / {{ ub.book.page_count }} pages</span>
+              <span class="progress-badge-pct">{{ pct }}% complete</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill" style="width: {{ pct }}%;"></div>
+            </div>
+          {% else %}
+            <span class="detail-val">—</span>
+          {% endif %}
         </div>
       </div>
 
       {% if ub.note %}
-      <p class="book-note">
-        <i class="ti ti-notes" aria-hidden="true"></i> {{ ub.note }}
-      </p>
+      <div class="book-card-note">
+        <i class="ti ti-quote" aria-hidden="true"></i>
+        <p>{{ ub.note }}</p>
+      </div>
       {% endif %}
+
+      <div class="book-card-actions-bar">
+        <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
+           class="action-btn btn-edit">
+          <i class="ti ti-edit" aria-hidden="true"></i>
+          <span>Edit Details</span>
+        </a>
+        <form method="POST"
+              action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
+              onsubmit="return confirm('Remove &quot;{{ ub.book.title }}&quot; from your library?');"
+              style="display:inline;">
+          <button type="submit" class="action-btn btn-del">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+            <span>Remove Book</span>
+          </button>
+        </form>
+      </div>
     </div>
 
-    <div class="book-actions">
-      <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
-         class="action-btn btn-edit">
-        <i class="ti ti-edit"></i> Edit
-      </a>
-      <form method="POST"
-            action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
-            onsubmit="return confirm('Remove this book?')">
-        <button type="submit" class="action-btn btn-del">
-          <i class="ti ti-trash"></i>Delete
-        </button>
-      </form>
-    </div>
-
-  </div>
+  </article>
   {% endfor %}
 </div>
 
 {% else %}
-<div class="empty-state">
-  <i class="ti ti-folder-open" aria-hidden="true"></i>
-  <p>No books in this collection yet.</p>
-  <a href="{{ url_for('book.book_add') }}" class="btn-add" style="margin-top:1rem;">
-    <i class="ti ti-plus"></i> Add a book
-  </a>
+<div class="empty-state-card">
+  <div class="empty-illustration">
+    <div class="empty-icon-large">
+      <i class="ti ti-folder-open" aria-hidden="true"></i>
+    </div>
+  </div>
+  <h2 class="empty-title">This collection is currently empty</h2>
+  <p class="empty-desc">You can assign any books in your library to this collection or add a new book directly.</p>
+  <div class="empty-actions">
+    <a href="{{ url_for('book.book_add') }}" class="btn-primary-action btn-large">
+      <i class="ti ti-plus" aria-hidden="true"></i>
+      <span>Add Book to Collection</span>
+    </a>
+    <a href="{{ url_for('book.home') }}" class="btn-secondary-action">
+      <span>Back to Library</span>
+    </a>
+  </div>
 </div>
 {% endif %}
 

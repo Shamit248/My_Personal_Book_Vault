@@ -3,213 +3,543 @@
 {% block content %}
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">My Library</h1>
-    <p class="page-sub">{{ message }}</p>
+  <div class="page-title-wrap">
+    <div class="page-badge"><i class="ti ti-books" aria-hidden="true"></i> Personal Library</div>
+    <h1 class="page-title">Welcome back, {{ current_user.username }}</h1>
+    <p class="page-sub">{{ message or 'Track your reading milestones, rate your favorites, and organize your vaults.' }}</p>
   </div>
-  <a href="{{ url_for('book.book_add') }}" class="btn-add">
-    <i class="ti ti-plus" aria-hidden="true"></i> Add book
-  </a>
-</div>
-
-
-<div class="stats">
-  <div class="stat-card">
-    <p class="stat-label">Total books</p>
-    <p class="stat-val">{{ books|length }}</p>
-  </div>
-  <div class="stat-card">
-    <p class="stat-label">Reading</p>
-    <p class="stat-val blue">{{ books|selectattr('status','equalto','Reading')|list|length }}</p>
-  </div>
-  <div class="stat-card">
-    <p class="stat-label">Completed</p>
-    <p class="stat-val green">{{ books|selectattr('status','equalto','Completed')|list|length }}</p>
-  </div>
-  <div class="stat-card">
-    <p class="stat-label">Wishlist</p>
-    <p class="stat-val amber">{{ books|selectattr('status','equalto','Wishlist')|list|length }}</p>
+  <div class="page-actions">
+    <a href="{{ url_for('book.book_add') }}" class="btn-primary-action">
+      <i class="ti ti-plus" aria-hidden="true"></i>
+      <span>Add New Book</span>
+    </a>
   </div>
 </div>
 
-<div class="search-bar">
-  <i class="ti ti-search" aria-hidden="true"></i>
-  <input type="text" id="search-input" placeholder="Search by title, author or collection…">
+<!-- Quick Stats Cards -->
+<section class="stats" aria-label="Reading Statistics">
+  <div class="stat-card" data-filter="all" role="button" tabindex="0" title="View all books">
+    <div class="stat-header">
+      <span class="stat-label">Total Books</span>
+      <div class="stat-icon-wrap stat-icon-neutral">
+        <i class="ti ti-books" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val">{{ books|length }}</span>
+      <span class="stat-tag">In Vault</span>
+    </div>
+  </div>
+
+  <div class="stat-card" data-filter="reading" role="button" tabindex="0" title="Filter by Reading">
+    <div class="stat-header">
+      <span class="stat-label">Reading</span>
+      <div class="stat-icon-wrap stat-icon-blue">
+        <i class="ti ti-book-2" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val blue">{{ books|selectattr('status','equalto','Reading')|list|length }}</span>
+      <span class="stat-tag stat-tag-blue">Active</span>
+    </div>
+  </div>
+
+  <div class="stat-card" data-filter="completed" role="button" tabindex="0" title="Filter by Completed">
+    <div class="stat-header">
+      <span class="stat-label">Completed</span>
+      <div class="stat-icon-wrap stat-icon-green">
+        <i class="ti ti-circle-check" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val green">{{ books|selectattr('status','equalto','Completed')|list|length }}</span>
+      <span class="stat-tag stat-tag-green">Finished</span>
+    </div>
+  </div>
+
+  <div class="stat-card" data-filter="wishlist" role="button" tabindex="0" title="Filter by Wishlist">
+    <div class="stat-header">
+      <span class="stat-label">Wishlist</span>
+      <div class="stat-icon-wrap stat-icon-amber">
+        <i class="ti ti-bookmark" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val amber">{{ books|selectattr('status','equalto','Wishlist')|list|length }}</span>
+      <span class="stat-tag stat-tag-amber">To Read</span>
+    </div>
+  </div>
+</section>
+
+<!-- Filter Tabs & Search Bar Row -->
+<div class="toolbar-card">
+  <div class="filter-tabs" role="tablist" aria-label="Book Status Filter">
+    <button type="button" class="filter-tab active" data-filter="all" role="tab" aria-selected="true">
+      All <span class="tab-count">{{ books|length }}</span>
+    </button>
+    <button type="button" class="filter-tab" data-filter="reading" role="tab" aria-selected="false">
+      Reading <span class="tab-count">{{ books|selectattr('status','equalto','Reading')|list|length }}</span>
+    </button>
+    <button type="button" class="filter-tab" data-filter="completed" role="tab" aria-selected="false">
+      Completed <span class="tab-count">{{ books|selectattr('status','equalto','Completed')|list|length }}</span>
+    </button>
+    <button type="button" class="filter-tab" data-filter="wishlist" role="tab" aria-selected="false">
+      Wishlist <span class="tab-count">{{ books|selectattr('status','equalto','Wishlist')|list|length }}</span>
+    </button>
+  </div>
+
+  <div class="search-wrap">
+    <i class="ti ti-search search-icon" aria-hidden="true"></i>
+    <input type="text" id="search-input" class="search-input"
+           placeholder="Search books, author, genre… (Press Ctrl+K or /)"
+           aria-label="Search books in your library">
+    <kbd class="search-kbd-hint" aria-hidden="true">Ctrl K</kbd>
+    <button type="button" id="clear-search" class="search-clear-btn" aria-label="Clear search" style="display:none;">
+      <i class="ti ti-x" aria-hidden="true"></i>
+    </button>
+  </div>
 </div>
 
 {% if books %}
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>Cover</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Status</th>
-        <th>Progress</th>
-        <th>Rating</th>
-        <th>Collection</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="book-table">
-      {% for ub in books %}
-      <tr>
-        <td>
-          {% if ub.book.cover_image %}
-          <img src="{{ url_for('static', filename=ub.book.cover_image) }}"
-             width="45"
-             height="65"
-             style="object-fit:cover;border-radius:4px;">
-          {% else %}
-<div style="width:45px;height:65px;background:#e8f0ec;border-radius:4px;display:flex;align-items:center;justify-content:center;">
-  <i class="ti ti-book" style="color:#2d7a52;font-size:18px;"></i>
-</div>
-{% endif %}
-        </td>
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="vault-table" aria-label="Books table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 72px;">Cover</th>
+          <th scope="col" data-sortable="true" data-col="title">Book Info</th>
+          <th scope="col" data-sortable="true" data-col="author">Author</th>
+          <th scope="col" data-sortable="true" data-col="status">Status</th>
+          <th scope="col" data-sortable="true" data-col="progress">Reading Progress</th>
+          <th scope="col" data-sortable="true" data-col="rating">Rating</th>
+          <th scope="col">Collection</th>
+          <th scope="col" style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="book-table">
+        {% for ub in books %}
+        <tr class="book-row" data-status="{{ ub.status|lower }}"
+            data-search-content="{{ ub.book.title|lower }} {{ ub.book.author|lower }} {{ (ub.collection.collection_name if ub.collection else '')|lower }} {{ (ub.book.genre or '')|lower }}">
+          <td>
+            <div class="cover-thumb-wrap">
+              {% if ub.book.cover_image %}
+                <img src="{{ url_for('static', filename=ub.book.cover_image) }}"
+                     alt="Cover for {{ ub.book.title }}"
+                     class="cover-thumb-img"
+                     loading="lazy">
+              {% else %}
+                <div class="cover-thumb-fallback" aria-hidden="true">
+                  <i class="ti ti-book"></i>
+                </div>
+              {% endif %}
+            </div>
+          </td>
 
-<td>
-    <span class="book-title-link"
-        data-title="{{ ub.book.title }}"
-        data-author="{{ ub.book.author }}"
-        data-status="{{ ub.status }}"
-        data-rating="{{ ub.rating or 0 }}"
-        data-progress="{{ ub.current_page or '—' }} / {{ ub.book.page_count or '—' }}"
-        data-collection="{{ ub.collection.collection_name if ub.collection else '—' }}"
-        data-start="{{ ub.start_date or '—' }}"
-        data-end="{{ ub.end_date or '—' }}"
-        data-genre="{{ ub.book.genre or '—' }}"
-        data-language="{{ ub.book.language or '—' }}"
-        data-year="{{ ub.book.published_year or '—' }}"
-        data-pages="{{ ub.book.page_count or '—' }}"
-        data-notes="{{ ub.note or 'No notes added.' }}"
-        data-cover="{{ url_for('static', filename=ub.book.cover_image) if ub.book.cover_image else '' }}">
-        {{ ub.book.title }}
-    </span>
-</td>
-        <td>{{ ub.book.author }}</td>
-        <td>
-          <span class="badge badge-{{ ub.status|lower }}">{{ ub.status }}</span>
-        </td>
-        <td>
-          {% if ub.current_page and ub.book.page_count %}
-            {{ ub.current_page }} / {{ ub.book.page_count }}
-          {% else %}
-            —
-          {% endif %}
-        </td>
-        <td>
-          {% if ub.rating %}
-            <span class="stars">
-              {% for i in range(ub.rating) %}★{% endfor %}
-              {% for i in range(5 - ub.rating) %}☆{% endfor %}
+          <td>
+            <div class="book-title-cell">
+              <button type="button" class="book-title-link"
+                  data-uid="{{ ub.uid }}"
+                  data-edit-url="{{ url_for('book.userbook_update', uid=ub.uid) }}"
+                  data-title="{{ ub.book.title }}"
+                  data-author="{{ ub.book.author }}"
+                  data-status="{{ ub.status }}"
+                  data-rating="{{ ub.rating or 0 }}"
+                  data-current-page="{{ ub.current_page or 0 }}"
+                  data-total-pages="{{ ub.book.page_count or 0 }}"
+                  data-progress="{{ ub.current_page or '0' }} / {{ ub.book.page_count or '—' }}"
+                  data-collection="{{ ub.collection.collection_name if ub.collection else 'None' }}"
+                  data-start="{{ ub.start_date.strftime('%d %b %Y') if ub.start_date else '—' }}"
+                  data-end="{{ ub.end_date.strftime('%d %b %Y') if ub.end_date else '—' }}"
+                  data-genre="{{ ub.book.genre or '—' }}"
+                  data-language="{{ ub.book.language or '—' }}"
+                  data-year="{{ ub.book.published_year or '—' }}"
+                  data-pages="{{ ub.book.page_count or '—' }}"
+                  data-notes="{{ ub.note or 'No personal notes added for this book yet.' }}"
+                  data-description="{{ ub.book.description or 'No description provided.' }}"
+                  data-cover="{{ url_for('static', filename=ub.book.cover_image) if ub.book.cover_image else '' }}">
+                  {{ ub.book.title }}
+              </button>
+              {% if ub.book.genre %}
+                <span class="genre-tag">{{ ub.book.genre }}</span>
+              {% endif %}
+            </div>
+          </td>
+
+          <td class="author-cell">
+            <span class="author-name">{{ ub.book.author }}</span>
+          </td>
+
+          <td>
+            <span class="status-pill status-{{ ub.status|lower }}">
+              <span class="status-dot"></span>
+              {{ ub.status }}
             </span>
-          {% else %}
-            <span class="no-rating">Not rated</span>
-          {% endif %}
-        </td>
-        <td>{{ ub.collection.collection_name if ub.collection else '—' }}</td>
-        <td>
-          <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
-             class="action-btn btn-edit">
-            <i class="ti ti-edit" aria-hidden="true"></i> Edit
-          </a>
-          <form action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
-      method="POST"
-      style="display:inline;"
-      onsubmit="return confirm('Remove this book from your library?');">
+          </td>
 
-    <button type="submit" class="action-btn btn-del">
-        <i class="ti ti-trash"></i> Delete
+          <td>
+            <div class="progress-cell">
+              {% if ub.book.page_count and ub.book.page_count > 0 %}
+                {% set cur = ub.current_page or 0 %}
+                {% set pct = ((cur / ub.book.page_count) * 100)|round|int %}
+                {% set pct = [pct, 100]|min %}
+                <div class="progress-info">
+                  <span class="progress-pages">{{ cur }} / {{ ub.book.page_count }} pp.</span>
+                  <span class="progress-pct">{{ pct }}%</span>
+                </div>
+                <div class="progress-track" role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-fill" style="width: {{ pct }}%;"></div>
+                </div>
+              {% else %}
+                <span class="progress-untracked">—</span>
+              {% endif %}
+            </div>
+          </td>
+
+          <td>
+            {% if ub.rating and ub.rating > 0 %}
+              <div class="rating-stars" aria-label="Rated {{ ub.rating }} out of 5 stars">
+                {% for i in range(ub.rating) %}<span class="star-filled">★</span>{% endfor %}{% for i in range(5 - ub.rating) %}<span class="star-empty">★</span>{% endfor %}
+              </div>
+            {% else %}
+              <span class="no-rating-text">Unrated</span>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if ub.collection %}
+              <span class="collection-pill">
+                <i class="ti ti-folder" aria-hidden="true"></i>
+                {{ ub.collection.collection_name }}
+              </span>
+            {% else %}
+              <span class="no-collection-text">—</span>
+            {% endif %}
+          </td>
+
+          <td style="text-align: right;">
+            <div class="action-btn-group">
+              <a href="{{ url_for('book.userbook_update', uid=ub.uid) }}"
+                 class="action-btn btn-edit" title="Edit book details">
+                <i class="ti ti-edit" aria-hidden="true"></i>
+                <span>Edit</span>
+              </a>
+              <form action="{{ url_for('book.userbook_delete', uid=ub.uid) }}"
+                    method="POST"
+                    style="display:inline;">
+                <button type="submit" class="action-btn btn-del" title="Remove book">
+                  <i class="ti ti-trash" aria-hidden="true"></i>
+                  <span>Delete</span>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="no-search-results" class="empty-filter-state" style="display:none;">
+    <div class="empty-icon-wrap"><i class="ti ti-search-off" aria-hidden="true"></i></div>
+    <h3>No matching books found</h3>
+    <p>Try adjusting your search terms or filter selection.</p>
+    <button type="button" id="reset-filter-btn" class="btn-secondary-action">
+      <i class="ti ti-refresh" aria-hidden="true"></i> Show All Books
     </button>
-
-</form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  </div>
 </div>
 
 {% else %}
-<div class="empty-state">
-  <i class="ti ti-books" aria-hidden="true"></i>
-  <p>Your library is empty.</p>
-  <a href="{{ url_for('book.book_add') }}" class="btn-add" style="margin-top:1rem;">
-    <i class="ti ti-plus" aria-hidden="true"></i> Add your first book
+<div class="empty-state-card">
+  <div class="empty-illustration">
+    <div class="empty-icon-large">
+      <i class="ti ti-book-upload" aria-hidden="true"></i>
+    </div>
+  </div>
+  <h2 class="empty-title">Your vault is ready for its first book</h2>
+  <p class="empty-desc">Start building your personal library, log your daily progress, and organize your collection today.</p>
+  <a href="{{ url_for('book.book_add') }}" class="btn-primary-action btn-large">
+    <i class="ti ti-plus" aria-hidden="true"></i> Add Your First Book
   </a>
 </div>
 {% endif %}
 
-<!-- Modal -->
-<div id="book-modal" class="modal-overlay" onclick="closeModal(event)">
-  <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('book-modal').style.display='none'">
-      <i class="ti ti-x"></i>
+<!-- Enhanced Book Details Modal -->
+<div id="book-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="m-title" style="display:none;">
+  <div class="modal-box-card">
+    <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close dialog">
+      <i class="ti ti-x" aria-hidden="true"></i>
     </button>
-    <img id="m-cover" src="" alt="cover"
-     style="width:60px;height:90px;object-fit:cover;border-radius:6px;margin-bottom:0.75rem;display:none;">
-    <h2 class="modal-title" id="m-title"></h2>
-    <p class="modal-author" id="m-author"></p>
-    <div class="modal-grid">
-      <div class="modal-field"><span class="modal-label">Status</span><span id="m-status"></span></div>
-      <div class="modal-field"><span class="modal-label">Rating</span><span id="m-rating"></span></div>
-      <div class="modal-field"><span class="modal-label">Progress</span><span id="m-progress"></span></div>
-      <div class="modal-field"><span class="modal-label">Collection</span><span id="m-collection"></span></div>
-      <div class="modal-field"><span class="modal-label">Start Date</span><span id="m-start"></span></div>
-      <div class="modal-field"><span class="modal-label">End Date</span><span id="m-end"></span></div>
-      <div class="modal-field"><span class="modal-label">Genre</span><span id="m-genre"></span></div>
-      <div class="modal-field"><span class="modal-label">Language</span><span id="m-language"></span></div>
-      <div class="modal-field"><span class="modal-label">Published</span><span id="m-year"></span></div>
-      <div class="modal-field"><span class="modal-label">Pages</span><span id="m-pages"></span></div>
+
+    <div class="modal-hero">
+      <div class="modal-cover-wrap">
+        <img id="m-cover" src="" alt="Cover thumbnail" class="modal-cover-img" style="display:none;">
+        <div id="m-cover-fallback" class="modal-cover-fallback">
+          <i class="ti ti-book" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="modal-hero-content">
+        <div class="modal-status-badge" id="m-status-wrap">
+          <span class="status-pill" id="m-status-pill">
+            <span class="status-dot"></span>
+            <span id="m-status">Reading</span>
+          </span>
+        </div>
+        <h2 class="modal-book-title" id="m-title">Book Title</h2>
+        <p class="modal-book-author" id="m-author">by Author Name</p>
+        <div class="modal-rating-row" id="m-rating-wrap">
+          <div class="rating-stars" id="m-rating-stars"></div>
+          <span class="modal-rating-text" id="m-rating-text"></span>
+        </div>
+      </div>
     </div>
-    <div class="modal-field" style="margin-top:0.75rem">
-      <span class="modal-label">Notes</span>
-      <p id="m-notes" class="modal-notes"></p>
+
+    <div class="modal-body-content">
+      <div class="modal-section-title">Reading & Book Metadata</div>
+      <div class="modal-meta-grid">
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-folder" aria-hidden="true"></i> Collection</span>
+          <span class="meta-val" id="m-collection">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-bookmark" aria-hidden="true"></i> Progress</span>
+          <span class="meta-val" id="m-progress">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-category" aria-hidden="true"></i> Genre</span>
+          <span class="meta-val" id="m-genre">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-world" aria-hidden="true"></i> Language</span>
+          <span class="meta-val" id="m-language">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-calendar" aria-hidden="true"></i> Published</span>
+          <span class="meta-val" id="m-year">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-files" aria-hidden="true"></i> Total Pages</span>
+          <span class="meta-val" id="m-pages">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-calendar-event" aria-hidden="true"></i> Started</span>
+          <span class="meta-val" id="m-start">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label"><i class="ti ti-circle-check" aria-hidden="true"></i> Finished</span>
+          <span class="meta-val" id="m-end">—</span>
+        </div>
+      </div>
+
+      <div class="modal-notes-wrap">
+        <span class="meta-label"><i class="ti ti-notes" aria-hidden="true"></i> Personal Reading Notes</span>
+        <blockquote class="modal-notes-quote" id="m-notes">
+          No personal notes added.
+        </blockquote>
+      </div>
+
+      <div class="modal-description-wrap" id="m-desc-section">
+        <span class="meta-label"><i class="ti ti-align-left" aria-hidden="true"></i> Description</span>
+        <p class="modal-desc-text" id="m-description"></p>
+      </div>
+    </div>
+
+    <div class="modal-footer-actions">
+      <button type="button" id="m-copy-btn" class="btn-secondary-action" title="Copy book summary to clipboard">
+        <i class="ti ti-copy" aria-hidden="true"></i>
+        <span>Copy Details</span>
+      </button>
+      <a href="#" id="m-edit-btn" class="btn-primary-action">
+        <i class="ti ti-edit" aria-hidden="true"></i>
+        <span>Edit Reading Details</span>
+      </a>
+      <button type="button" class="btn-secondary-action" id="m-close-footer-btn">
+        Close
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-document.getElementById('search-input').addEventListener('input', function () {
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('#book-table tr').forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-});
+(function() {
+  const searchInput = document.getElementById('search-input');
+  const clearBtn = document.getElementById('clear-search');
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const statCards = document.querySelectorAll('.stat-card');
+  const bookRows = document.querySelectorAll('#book-table tr');
+  const noResults = document.getElementById('no-search-results');
+  const resetBtn = document.getElementById('reset-filter-btn');
 
-document.querySelectorAll('.book-title-link').forEach(el => {
-  el.addEventListener('click', function () {
-    const d = this.dataset;
+  let activeFilter = 'all';
+
+  function applyFilters() {
+    const q = (searchInput ? searchInput.value.trim().toLowerCase() : '');
+    if (clearBtn) {
+      clearBtn.style.display = q ? 'block' : 'none';
+    }
+
+    let visibleCount = 0;
+
+    bookRows.forEach(row => {
+      const rowStatus = row.getAttribute('data-status') || '';
+      const rowSearch = row.getAttribute('data-search-content') || '';
+
+      const matchesStatus = (activeFilter === 'all' || rowStatus === activeFilter);
+      const matchesSearch = (!q || rowSearch.includes(q));
+
+      if (matchesStatus && matchesSearch) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (noResults) {
+      noResults.style.display = (visibleCount === 0 && bookRows.length > 0) ? 'block' : 'none';
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', applyFilters);
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.focus();
+      applyFilters();
+    });
+  }
+
+  function setActiveTab(filter) {
+    activeFilter = filter;
+    filterTabs.forEach(tab => {
+      const isTab = (tab.getAttribute('data-filter') === filter);
+      tab.classList.toggle('active', isTab);
+      tab.setAttribute('aria-selected', isTab ? 'true' : 'false');
+    });
+    applyFilters();
+  }
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      setActiveTab(tab.getAttribute('data-filter'));
+    });
+  });
+
+  statCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const filter = card.getAttribute('data-filter');
+      if (filter) setActiveTab(filter);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const filter = card.getAttribute('data-filter');
+        if (filter) setActiveTab(filter);
+      }
+    });
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      setActiveTab('all');
+    });
+  }
+
+  // Modal logic
+  const modal = document.getElementById('book-modal');
+  const closeBtn = document.getElementById('modal-close-btn');
+  const closeFooterBtn = document.getElementById('m-close-footer-btn');
+
+  function openBookModal(d) {
     const cover = document.getElementById("m-cover");
+    const fallback = document.getElementById("m-cover-fallback");
 
-if (d.cover) {
-    cover.src = d.cover;
-    cover.style.display = "block";
-} else {
-    cover.style.display = "none";
-}
-    document.getElementById('m-title').textContent = d.title;
-    document.getElementById('m-author').textContent = 'by ' + d.author;
-    document.getElementById('m-status').textContent = d.status;
-    document.getElementById('m-progress').textContent = d.progress;
-    document.getElementById('m-collection').textContent = d.collection;
-    document.getElementById('m-start').textContent = d.start;
-    document.getElementById('m-end').textContent = d.end;
-    document.getElementById('m-genre').textContent = d.genre;
-    document.getElementById('m-language').textContent = d.language;
-    document.getElementById('m-year').textContent = d.year;
-    document.getElementById('m-pages').textContent = d.pages;
-    document.getElementById('m-notes').textContent = d.notes;
-    document.getElementById('m-rating').textContent =
-      d.rating > 0 ? '★'.repeat(Number(d.rating)) + '☆'.repeat(5 - Number(d.rating)) : 'Not rated';
-    document.getElementById('book-modal').style.display = 'flex';
+    if (d.cover) {
+      cover.src = d.cover;
+      cover.style.display = "block";
+      if (fallback) fallback.style.display = "none";
+    } else {
+      cover.style.display = "none";
+      if (fallback) fallback.style.display = "flex";
+    }
+
+    document.getElementById('m-title').textContent = d.title || 'Untitled';
+    document.getElementById('m-author').textContent = 'by ' + (d.author || 'Unknown');
+
+    const statusPill = document.getElementById('m-status-pill');
+    const statusText = document.getElementById('m-status');
+    const st = (d.status || 'Wishlist').toLowerCase();
+    statusText.textContent = d.status || 'Wishlist';
+    statusPill.className = 'status-pill status-' + st;
+
+    document.getElementById('m-progress').textContent = d.progress || '—';
+    document.getElementById('m-collection').textContent = d.collection || 'None';
+    document.getElementById('m-start').textContent = d.start || '—';
+    document.getElementById('m-end').textContent = d.end || '—';
+    document.getElementById('m-genre').textContent = d.genre || '—';
+    document.getElementById('m-language').textContent = d.language || '—';
+    document.getElementById('m-year').textContent = d.year || '—';
+    document.getElementById('m-pages').textContent = d.pages ? (d.pages + ' pages') : '—';
+    document.getElementById('m-notes').textContent = d.notes || 'No personal notes added.';
+
+    const descSec = document.getElementById('m-desc-section');
+    const descText = document.getElementById('m-description');
+    if (d.description && d.description !== 'None' && d.description !== 'No description provided.') {
+      descText.textContent = d.description;
+      descSec.style.display = 'block';
+    } else {
+      descSec.style.display = 'none';
+    }
+
+    const ratingStars = document.getElementById('m-rating-stars');
+    const ratingText = document.getElementById('m-rating-text');
+    const r = Number(d.rating) || 0;
+    if (r > 0) {
+      let starsHtml = '';
+      for (let i = 0; i < r; i++) starsHtml += '<span class="star-filled">★</span>';
+      for (let i = 0; i < (5 - r); i++) starsHtml += '<span class="star-empty">★</span>';
+      ratingStars.innerHTML = starsHtml;
+      ratingText.textContent = r + ' / 5 stars';
+    } else {
+      ratingStars.innerHTML = '';
+      ratingText.textContent = 'Not yet rated';
+    }
+
+    const editBtn = document.getElementById('m-edit-btn');
+    if (editBtn && d.editUrl) {
+      editBtn.href = d.editUrl;
+    }
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideModal() {
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  document.querySelectorAll('.book-title-link').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      openBookModal(this.dataset);
+    });
   });
-});
 
-function closeModal(e) {
-  if (e.target.id === 'book-modal')
-    document.getElementById('book-modal').style.display = 'none';
-}
+  if (closeBtn) closeBtn.addEventListener('click', hideModal);
+  if (closeFooterBtn) closeFooterBtn.addEventListener('click', hideModal);
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) hideModal();
+    });
+  }
+})();
 </script>
 {% endblock %}

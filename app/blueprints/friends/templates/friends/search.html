@@ -1,47 +1,82 @@
 {% extends "book/base.html" %}
-{% block title %}Search Friends | My Personal Book Vault{% endblock %}
+{% block title %}Search Readers — Book Vault{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Find Friends</h1>
-    <p class="page-sub">Search users by username and send friend requests.</p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="{{ url_for('friends.friends_list') }}">Friends</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Find Readers</span>
+    </div>
+    <h1 class="page-title">Find Readers & Friends</h1>
+    <p class="page-sub">Search for other vault users by username to share your reading adventures.</p>
   </div>
 </div>
 
-<form method="GET" action="{{ url_for('friends.search_users') }}" class="search-bar friends-search-form">
-  <i class="ti ti-search"></i>
-  <input type="text" name="q" placeholder="Search by username..." value="{{ query }}">
-  <button type="submit" class="btn-inline-search">Search</button>
-</form>
+<div class="search-user-panel">
+  <form method="GET" action="{{ url_for('friends.search_users') }}" class="user-search-form">
+    <div class="user-search-input-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input type="text" name="q" class="user-search-field"
+             placeholder="Search by username (e.g. shamit, admin, priyanshu)…"
+             value="{{ query or '' }}"
+             aria-label="Search readers by username" required autofocus>
+    </div>
+    <button type="submit" class="btn-primary-action">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <span>Search</span>
+    </button>
+  </form>
+</div>
 
 {% if query %}
   {% if results %}
-    <div class="friends-results">
+    <div class="search-results-header">
+      <h2 class="search-results-title">Search Results for &ldquo;{{ query }}&rdquo;</h2>
+      <span class="search-results-count">{{ results|length }} reader{{ 's' if results|length != 1 }} found</span>
+    </div>
+
+    <div class="friends-cards-grid">
       {% for item in results %}
-      <div class="friend-card">
-        <div class="friend-avatar">
+      <div class="friend-user-card">
+        <div class="friend-user-avatar">
           {{ item.user.username[0]|upper }}
         </div>
 
-        <div class="friend-info">
-          <h3>{{ item.user.username }}</h3>
-          <p>{{ item.user.email }}</p>
+        <div class="friend-user-info">
+          <div class="friend-header-row">
+            <h3 class="friend-username">{{ item.user.username }}</h3>
+            {% if item.relation_status == "accepted" %}
+              <span class="friend-status-badge badge-green"><i class="ti ti-check" aria-hidden="true"></i> Friends</span>
+            {% elif item.relation_status == "pending" and item.request_direction == "sent" %}
+              <span class="friend-status-badge badge-amber"><i class="ti ti-clock" aria-hidden="true"></i> Request Sent</span>
+            {% elif item.relation_status == "pending" and item.request_direction == "received" %}
+              <span class="friend-status-badge badge-blue"><i class="ti ti-mail" aria-hidden="true"></i> Invited You</span>
+            {% endif %}
+          </div>
+          <p class="friend-email"><i class="ti ti-mail" aria-hidden="true"></i> {{ item.user.email }}</p>
         </div>
 
-        <div class="friend-card-actions">
+        <div class="friend-user-actions">
           {% if item.relation_status == "accepted" %}
-            <span class="friend-pill friend-pill-success">Friends</span>
+            <a href="{{ url_for('friends.activity_feed') }}" class="btn-secondary-action btn-small">
+              <i class="ti ti-activity" aria-hidden="true"></i> Activity
+            </a>
           {% elif item.relation_status == "pending" and item.request_direction == "sent" %}
-            <span class="friend-pill friend-pill-pending">Request Sent</span>
+            <button type="button" class="btn-disabled-pill btn-small" disabled>
+              <i class="ti ti-check" aria-hidden="true"></i> Pending
+            </button>
           {% elif item.relation_status == "pending" and item.request_direction == "received" %}
-            <a href="{{ url_for('friends.requests_page') }}" class="action-btn btn-edit">
-              <i class="ti ti-user-check"></i> View Request
+            <a href="{{ url_for('friends.requests_page') }}" class="btn-primary-action btn-small">
+              <i class="ti ti-user-check" aria-hidden="true"></i> Respond
             </a>
           {% else %}
             <form method="POST" action="{{ url_for('friends.send_request', user_id=item.user.pid) }}">
-              <button type="submit" class="btn-add btn-small">
-                <i class="ti ti-user-plus"></i> Add Friend
+              <button type="submit" class="btn-primary-action btn-small">
+                <i class="ti ti-user-plus" aria-hidden="true"></i> Add Friend
               </button>
             </form>
           {% endif %}
@@ -50,15 +85,25 @@
       {% endfor %}
     </div>
   {% else %}
-    <div class="empty-state">
-      <i class="ti ti-search-off"></i>
-      <p>No users found for "{{ query }}".</p>
+    <div class="empty-state-card">
+      <div class="empty-illustration">
+        <div class="empty-icon-large">
+          <i class="ti ti-search-off" aria-hidden="true"></i>
+        </div>
+      </div>
+      <h2 class="empty-title">No readers found matching &ldquo;{{ query }}&rdquo;</h2>
+      <p class="empty-desc">Check the username spelling or try searching for another reader.</p>
     </div>
   {% endif %}
 {% else %}
-  <div class="empty-state">
-    <i class="ti ti-user-search"></i>
-    <p>Search by username to find readers and send friend requests.</p>
+  <div class="empty-state-card">
+    <div class="empty-illustration">
+      <div class="empty-icon-large">
+        <i class="ti ti-user-search" aria-hidden="true"></i>
+      </div>
+    </div>
+    <h2 class="empty-title">Search for fellow book lovers</h2>
+    <p class="empty-desc">Type a username in the search box above to find readers, send friend requests, and start tracking mutual activities.</p>
   </div>
 {% endif %}
 {% endblock %}

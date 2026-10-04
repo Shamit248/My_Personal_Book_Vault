@@ -1,100 +1,207 @@
 {% extends "book/base.html" %}
-{% block title %}Add Book — Book Vault{% endblock %}
+{% block title %}Add New Book — Book Vault{% endblock %}
 {% block content %}
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Add New Book</h1>
-    <p class="page-sub">Fill in the details to add a book to your vault</p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Add Book</span>
+    </div>
+    <h1 class="page-title">Add New Book to Vault</h1>
+    <p class="page-sub">Enter book specifications, page count, and cover artwork before configuring your reading progress.</p>
   </div>
 </div>
 
-<div class="form-wrap">
-  <form action="{{ url_for('book.book_add') }}" method="POST" enctype="multipart/form-data">
+<div class="form-container-card">
+  <form action="{{ url_for('book.book_add') }}" method="POST" enctype="multipart/form-data" class="elevated-form">
 
-    <div class="form-grid">
+    <div class="form-section-header">
+      <div class="form-section-icon"><i class="ti ti-book" aria-hidden="true"></i></div>
+      <div class="form-section-text">
+        <h2 class="form-section-title">Book Information</h2>
+        <p class="form-section-sub">Essential details identifying the book in your personal collection.</p>
+      </div>
+    </div>
 
+    <div class="form-grid-2col">
       <div class="field">
-        <label for="title">Title <span style="color:#c03030">*</span></label>
+        <label for="title" class="field-label">Book Title <span class="required-star">*</span></label>
         <div class="input-wrap">
-          <i class="ti ti-book input-icon"></i>
-          <input type="text" name="title" id="title" placeholder="Book title" required>
+          <i class="ti ti-bookmark input-icon" aria-hidden="true"></i>
+          <input type="text" name="title" id="title" class="form-control-input"
+                 placeholder="e.g. The Lord of the Rings" required>
         </div>
       </div>
 
       <div class="field">
-        <label for="author">Author <span style="color:#c03030">*</span></label>
+        <label for="author" class="field-label">Author Name <span class="required-star">*</span></label>
         <div class="input-wrap">
-          <i class="ti ti-user input-icon"></i>
-          <input type="text" name="author" id="author" placeholder="Author name" required>
+          <i class="ti ti-user-edit input-icon" aria-hidden="true"></i>
+          <input type="text" name="author" id="author" class="form-control-input"
+                 placeholder="e.g. J.R.R. Tolkien" required>
         </div>
       </div>
 
       <div class="field">
-        <label for="language">Language <span style="color:#c03030">*</span></label>
-        <div class="input-wrap">
-          <i class="ti ti-language input-icon"></i>
-          <input type="text" name="language" id="language" placeholder="e.g. English" required>
+        <label for="genre" class="field-label">Genre</label>
+        <div class="input-wrap select-wrapper">
+          <i class="ti ti-category input-icon" aria-hidden="true"></i>
+          <select name="genre" id="genre" class="form-control-select">
+            <option value="">— Select genre —</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Programming">Programming & Tech</option>
+            <option value="Science Fiction">Science Fiction</option>
+            <option value="Biography">Biography & Memoir</option>
+            <option value="Self Help">Self Help & Productivity</option>
+            <option value="History">History & Philosophy</option>
+            <option value="Mystery">Mystery & Thriller</option>
+            <option value="Other">Other</option>
+          </select>
+          <i class="ti ti-chevron-down select-chevron" aria-hidden="true"></i>
         </div>
       </div>
 
       <div class="field">
-  <label for="genre">Genre</label>
-  <div class="input-wrap">
-    <select name="genre" id="genre" class="select-input">
-      <option value="">— Select genre —</option>
-      <option>Fantasy</option>
-      <option>Fiction</option>
-      <option>Programming</option>
-      <option>Science Fiction</option>
-      <option>Biography</option>
-      <option>Self Help</option>
-      <option>History</option>
-      <option>Other</option>
-    </select>
-  </div>
-</div>
-
-      <div class="field">
-        <label for="page_count">Total Pages <span style="color:#c03030">*</span></label>
+        <label for="language" class="field-label">Language <span class="required-star">*</span></label>
         <div class="input-wrap">
-          <i class="ti ti-files input-icon"></i>
-          <input type="number" name="page_count" id="page_count"
-                 placeholder="e.g. 320" min="1" required>
+          <i class="ti ti-world input-icon" aria-hidden="true"></i>
+          <input type="text" name="language" id="language" class="form-control-input"
+                 placeholder="e.g. English, French, Spanish" value="English" required>
         </div>
       </div>
 
       <div class="field">
-        <label for="published_year">Published Year <span class="optional">(optional)</span></label>
+        <label for="page_count" class="field-label">Total Page Count <span class="required-star">*</span></label>
         <div class="input-wrap">
-          <i class="ti ti-calendar input-icon"></i>
-          <input type="number" name="published_year" id="published_year"
-                 placeholder="e.g. 2021" min="1000" max="2099">
+          <i class="ti ti-files input-icon" aria-hidden="true"></i>
+          <input type="number" name="page_count" id="page_count" class="form-control-input"
+                 placeholder="e.g. 432" min="1" required>
         </div>
       </div>
 
-      <div class="field form-full">
-  <label for="description">Description <span class="optional">(optional)</span></label>
-  <textarea name="description" id="description"
-            placeholder="A short description of the book…"
-            rows="4" style="width:100%;resize:vertical;"></textarea>
-</div>
-      <div class="field form-full">
-  <label class="form-label">Cover Image <span class="optional">(optional — PNG, JPG)</span></label>
-  <div class="input-group">
-    <input type="file" name="file" id="file"
-           class="form-control"
-           accept=".png,.jpg,.jpeg,image/png,image/jpeg">
-  </div>
-  <small class="text-muted">Max recommended size: 2MB</small>
-</div>
+      <div class="field">
+        <label for="published_year" class="field-label">Year Published <span class="optional-pill">Optional</span></label>
+        <div class="input-wrap">
+          <i class="ti ti-calendar input-icon" aria-hidden="true"></i>
+          <input type="number" name="published_year" id="published_year" class="form-control-input"
+                 placeholder="e.g. 1954" min="1000" max="2099">
+        </div>
+      </div>
+    </div>
 
-<button type="submit" class="btn w-100 mt-3"
-        style="background:#2d7a52;color:#fff;font-weight:600;padding:12px;border-radius:10px;font-size:15px;">
-  <i class="ti ti-arrow-right"></i> Continue to Reading Details
-</button>
+    <div class="form-divider"></div>
 
+    <div class="form-section-header">
+      <div class="form-section-icon"><i class="ti ti-photo" aria-hidden="true"></i></div>
+      <div class="form-section-text">
+        <h2 class="form-section-title">Cover Artwork & Synopsis</h2>
+        <p class="form-section-sub">Attach cover artwork and book synopsis to personalize the presentation.</p>
+      </div>
+    </div>
+
+    <div class="field form-full-width">
+      <label for="description" class="field-label">Book Synopsis / Description <span class="optional-pill">Optional</span></label>
+      <textarea name="description" id="description" class="form-control-textarea"
+                placeholder="A concise summary of the book plot, key ideas, or themes…"
+                rows="3"></textarea>
+    </div>
+
+    <div class="field form-full-width">
+      <label class="field-label">Book Cover Image <span class="optional-pill">JPG, PNG, WebP up to 2MB</span></label>
+      <div class="upload-dropzone" id="cover-dropzone">
+        <div class="dropzone-preview-wrap" id="dropzone-preview-box" style="display:none;">
+          <img id="cover-preview-img" src="" alt="Cover Preview" class="cover-live-preview">
+          <button type="button" class="btn-remove-preview" id="btn-remove-preview" title="Remove selected image">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="dropzone-content" id="dropzone-instructions">
+          <div class="upload-icon-circle">
+            <i class="ti ti-cloud-upload" aria-hidden="true"></i>
+          </div>
+          <span class="upload-primary-text">Click to choose image or drag & drop file</span>
+          <span class="upload-secondary-text">Standard cover aspect ratio (2:3) works best</span>
+        </div>
+        <input type="file" name="file" id="cover-file-input"
+               class="dropzone-hidden-input"
+               accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+      </div>
+    </div>
+
+    <div class="form-actions-bar">
+      <a href="{{ url_for('book.home') }}" class="btn-secondary-action">
+        Cancel
+      </a>
+      <button type="submit" class="btn-primary-action btn-large">
+        <span>Proceed to Reading Status</span>
+        <i class="ti ti-arrow-right" aria-hidden="true"></i>
+      </button>
+    </div>
 
   </form>
 </div>
+
+<script>
+(function() {
+  const fileInput = document.getElementById('cover-file-input');
+  const dropzone = document.getElementById('cover-dropzone');
+  const previewBox = document.getElementById('dropzone-preview-box');
+  const previewImg = document.getElementById('cover-preview-img');
+  const instructions = document.getElementById('dropzone-instructions');
+  const removeBtn = document.getElementById('btn-remove-preview');
+
+  if (!fileInput || !dropzone) return;
+
+  function showPreview(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewBox.style.display = 'block';
+      instructions.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      showPreview(this.files[0]);
+    }
+  });
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fileInput.value = '';
+      previewImg.src = '';
+      previewBox.style.display = 'none';
+      instructions.style.display = 'flex';
+    });
+  }
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('is-dragging');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('is-dragging');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      fileInput.files = e.dataTransfer.files;
+      showPreview(e.dataTransfer.files[0]);
+    }
+  });
+})();
+</script>
 {% endblock %}

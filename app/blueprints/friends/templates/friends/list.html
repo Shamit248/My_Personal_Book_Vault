@@ -1,40 +1,65 @@
 {% extends "book/base.html" %}
-{% block title %}Friends | My Personal Book Vault{% endblock %}
+{% block title %}Friends — Book Vault{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Friends</h1>
-    <p class="page-sub">View your friend list and discover their reading activity.</p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Community</span>
+      <span class="breadcrumb-separator">/</span>
+      <span>Friends</span>
+    </div>
+    <h1 class="page-title">Reading Friends</h1>
+    <p class="page-sub">Connect with fellow book lovers, follow their reading updates, and share literary discoveries.</p>
   </div>
-  <a href="{{ url_for('friends.search_users') }}" class="btn-add">
-    <i class="ti ti-search"></i> Find Friends
-  </a>
+  <div class="page-actions">
+    <a href="{{ url_for('friends.search_users') }}" class="btn-primary-action">
+      <i class="ti ti-user-plus" aria-hidden="true"></i>
+      <span>Find New Friends</span>
+    </a>
+  </div>
 </div>
 
 {% if friends_list %}
-<div class="friends-grid">
+<div class="friends-cards-grid">
   {% for friend in friends_list %}
-  <div class="friend-card">
-    <div class="friend-avatar">
+  <div class="friend-user-card">
+    <div class="friend-user-avatar">
       {{ friend.username[0]|upper }}
     </div>
-    <div class="friend-info">
-      <h3>{{ friend.username }}</h3>
-      <p>{{ friend.email }}</p>
+    <div class="friend-user-info">
+      <div class="friend-header-row">
+        <h3 class="friend-username">{{ friend.username }}</h3>
+        <span class="friend-status-badge"><i class="ti ti-check" aria-hidden="true"></i> Friend</span>
+      </div>
+      <p class="friend-email"><i class="ti ti-mail" aria-hidden="true"></i> {{ friend.email }}</p>
     </div>
-    <div class="friend-card-actions">
-      <a href="{{ url_for('friends.activity_feed') }}" class="action-btn btn-edit">
-        <i class="ti ti-activity"></i> Activity
+    <div class="friend-user-actions">
+      <a href="{{ url_for('friends.activity_feed') }}" class="btn-secondary-action btn-small" title="View friend's reading activity">
+        <i class="ti ti-activity" aria-hidden="true"></i>
+        <span>Activity Feed</span>
       </a>
     </div>
   </div>
   {% endfor %}
 </div>
 {% else %}
-<div class="empty-state">
-  <i class="ti ti-users"></i>
-  <p>You have no friends yet. Search users and send your first request.</p>
+<div class="empty-state-card">
+  <div class="empty-illustration">
+    <div class="empty-icon-large">
+      <i class="ti ti-users-group" aria-hidden="true"></i>
+    </div>
+  </div>
+  <h2 class="empty-title">You haven't added any reading friends yet</h2>
+  <p class="empty-desc">Search for other readers by their username, send friend requests, and see what they are reading.</p>
+  <div class="empty-actions">
+    <a href="{{ url_for('friends.search_users') }}" class="btn-primary-action btn-large">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <span>Search for Readers</span>
+    </a>
+  </div>
 </div>
 {% endif %}
 {% endblock %}

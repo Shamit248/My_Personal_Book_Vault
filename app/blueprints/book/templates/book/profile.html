@@ -3,46 +3,126 @@
 {% block content %}
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">{{ current_user.username }}</h1>
-    <p class="page-sub">{{ current_user.email }}</p>
-  </div>
-</div>
-
-<div class="stats">
-  <div class="stat-card">
-    <i class="ti ti-books stat-icon"></i>
-    <p class="stat-label">Total Books</p>
-    <p class="stat-val">{{ total }}</p>
-  </div>
-  <div class="stat-card">
-    <i class="ti ti-check stat-icon"></i>
-    <p class="stat-label">Completed</p>
-    <p class="stat-val green">{{ completed }}</p>
-  </div>
-  <div class="stat-card">
-    <i class="ti ti-book stat-icon"></i>
-    <p class="stat-label">Reading</p>
-    <p class="stat-val blue">{{ reading }}</p>
-  </div>
-  <div class="stat-card">
-    <i class="ti ti-bookmark stat-icon"></i>
-    <p class="stat-label">Wishlist</p>
-    <p class="stat-val amber">{{ wishlist }}</p>
-  </div>
-</div>
-
-<div class="form-wrap" style="margin-top:1.5rem;">
-  <p class="form-title">Account Details</p>
-
-  <div class="book-details-grid">
-    <div class="book-detail-item">
-      <span class="detail-label">Username</span>
-      <span>{{ current_user.username }}</span>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Profile & Account</span>
     </div>
-    <div class="book-detail-item">
-      <span class="detail-label">Email</span>
-      <span>{{ current_user.email }}</span>
+    <h1 class="page-title">Reader Profile</h1>
+    <p class="page-sub">Manage your personal vault identity and review your all-time reading statistics.</p>
+  </div>
+</div>
+
+<div class="profile-hero-card">
+  <div class="profile-avatar-large">
+    {{ current_user.username[0]|upper }}
+  </div>
+  <div class="profile-hero-meta">
+    <div class="profile-badge-row">
+      <span class="profile-role-badge"><i class="ti ti-shield-check" aria-hidden="true"></i> Vault Curator</span>
+      <span class="profile-status-badge"><i class="ti ti-circle-filled" aria-hidden="true"></i> Active</span>
+    </div>
+    <h2 class="profile-hero-username">{{ current_user.username }}</h2>
+    <p class="profile-hero-email"><i class="ti ti-mail" aria-hidden="true"></i> {{ current_user.email }}</p>
+  </div>
+  <div class="profile-hero-actions">
+    <a href="{{ url_for('book.home') }}" class="btn-primary-action">
+      <i class="ti ti-books" aria-hidden="true"></i>
+      <span>Browse My Library</span>
+    </a>
+  </div>
+</div>
+
+<section class="stats" aria-label="Reading Milestones">
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-label">Total Books</span>
+      <div class="stat-icon-wrap stat-icon-neutral">
+        <i class="ti ti-books" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val">{{ total }}</span>
+      <span class="stat-tag">Cataloged</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-label">Completed</span>
+      <div class="stat-icon-wrap stat-icon-green">
+        <i class="ti ti-circle-check" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val green">{{ completed }}</span>
+      <span class="stat-tag stat-tag-green">Read</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-label">Currently Reading</span>
+      <div class="stat-icon-wrap stat-icon-blue">
+        <i class="ti ti-book-2" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val blue">{{ reading }}</span>
+      <span class="stat-tag stat-tag-blue">In Progress</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <span class="stat-label">Wishlist</span>
+      <div class="stat-icon-wrap stat-icon-amber">
+        <i class="ti ti-bookmark" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="stat-val-wrap">
+      <span class="stat-val amber">{{ wishlist }}</span>
+      <span class="stat-tag stat-tag-amber">Queued</span>
+    </div>
+  </div>
+</section>
+
+<div class="details-card-grid">
+  <div class="panel-card">
+    <div class="panel-header">
+      <div class="panel-icon"><i class="ti ti-user-check" aria-hidden="true"></i></div>
+      <h3 class="panel-title">Account Information</h3>
+    </div>
+    <div class="panel-body">
+      <div class="info-row">
+        <span class="info-label">Username</span>
+        <span class="info-val font-semibold">{{ current_user.username }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email Address</span>
+        <span class="info-val font-semibold">{{ current_user.email }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Vault Status</span>
+        <span class="info-val text-green font-semibold">Active & Authenticated</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-card">
+    <div class="panel-header">
+      <div class="panel-icon"><i class="ti ti-shield-lock" aria-hidden="true"></i></div>
+      <h3 class="panel-title">Privacy & Security</h3>
+    </div>
+    <div class="panel-body">
+      <p class="panel-note">Your books and personal notes are kept private to your account. Friends can only view your public activity feed updates.</p>
+      <div class="panel-actions">
+        <a href="{{ url_for('book.logout') }}" class="btn-danger-outline">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Sign Out of Vault</span>
+        </a>
+      </div>
     </div>
   </div>
 </div>

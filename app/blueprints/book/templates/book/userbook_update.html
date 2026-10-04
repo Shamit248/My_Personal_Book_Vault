@@ -3,127 +3,254 @@
 {% block content %}
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Edit Reading Details</h1>
-    <p class="page-sub">Update your progress for <strong>{{ userbook.book.title }}</strong></p>
+  <div class="page-title-wrap">
+    <div class="page-breadcrumb">
+      <a href="{{ url_for('book.home') }}">Library</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Edit Reading Record</span>
+    </div>
+    <h1 class="page-title">Update Reading Details</h1>
+    <p class="page-sub">Track your latest page progress, update notes, or change collection for <strong>{{ userbook.book.title }}</strong>.</p>
   </div>
 </div>
 
-<div class="form-wrap">
+<div class="form-container-card">
 
-  <div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid #f0ede8;">
-    {% if userbook.book.cover_image %}
-      <img src="{{ url_for('static', filename=userbook.book.cover_image) }}"
-           style="width:60px;height:90px;object-fit:cover;border-radius:6px;flex-shrink:0;">
-    {% else %}
-      <div style="width:60px;height:90px;background:#e8f0ec;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <i class="ti ti-book" style="font-size:24px;color:#2d7a52;"></i>
+  <!-- Book Showcase Header -->
+  <div class="book-mini-showcase">
+    <div class="showcase-cover-wrap">
+      {% if userbook.book.cover_image %}
+        <img src="{{ url_for('static', filename=userbook.book.cover_image) }}"
+             alt="Cover for {{ userbook.book.title }}"
+             class="showcase-cover-img" id="existing-cover-img">
+      {% else %}
+        <div class="showcase-cover-fallback">
+          <i class="ti ti-book" aria-hidden="true"></i>
+        </div>
+      {% endif %}
+    </div>
+    <div class="showcase-info">
+      <div class="showcase-header-row">
+        <span class="showcase-kicker">Currently Editing</span>
+        <span class="status-pill status-{{ userbook.status|lower }}">
+          <span class="status-dot"></span>
+          {{ userbook.status }}
+        </span>
       </div>
-    {% endif %}
-    <div>
-      <p style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:3px;">{{ userbook.book.title }}</p>
-      <p style="font-size:13px;color:#999;">by {{ userbook.book.author }}</p>
-      <span class="badge badge-{{ userbook.status|lower }}" style="margin-top:6px;">{{ userbook.status }}</span>
+      <h2 class="showcase-title">{{ userbook.book.title }}</h2>
+      <p class="showcase-author">by {{ userbook.book.author }}</p>
+      <div class="showcase-meta-row">
+        {% if userbook.book.genre %}
+          <span class="genre-tag">{{ userbook.book.genre }}</span>
+        {% endif %}
+        <span class="meta-chip"><i class="ti ti-files" aria-hidden="true"></i> {{ userbook.book.page_count }} total pages</span>
+        {% if userbook.current_page and userbook.book.page_count %}
+          {% set pct = ((userbook.current_page / userbook.book.page_count) * 100)|round|int %}
+          <span class="meta-chip meta-chip-highlight"><i class="ti ti-percentage" aria-hidden="true"></i> {{ pct }}% complete</span>
+        {% endif %}
+      </div>
     </div>
   </div>
 
   <form method="POST"
         action="{{ url_for('book.userbook_update', uid=userbook.uid) }}"
-        enctype="multipart/form-data">
+        enctype="multipart/form-data"
+        class="elevated-form">
 
-    <div class="form-grid">
+    <div class="form-grid-2col">
 
       <div class="field">
-        <label for="status">Status</label>
-        <div class="input-wrap">
-          <select name="status" id="status" class="select-input">
-            <option value="Wishlist"   {% if userbook.status=="Wishlist"   %}selected{% endif %}>Wishlist</option>
-            <option value="Reading"    {% if userbook.status=="Reading"    %}selected{% endif %}>Reading</option>
-            <option value="Completed"  {% if userbook.status=="Completed"  %}selected{% endif %}>Completed</option>
+        <label for="status" class="field-label">Status <span class="required-star">*</span></label>
+        <div class="input-wrap select-wrapper">
+          <i class="ti ti-flag input-icon" aria-hidden="true"></i>
+          <select name="status" id="status" class="form-control-select" required>
+            <option value="Wishlist"  {% if userbook.status=="Wishlist"  %}selected{% endif %}>Wishlist (Want to read)</option>
+            <option value="Reading"   {% if userbook.status=="Reading"   %}selected{% endif %}>Reading (In progress)</option>
+            <option value="Completed" {% if userbook.status=="Completed" %}selected{% endif %}>Completed (Finished)</option>
           </select>
+          <i class="ti ti-chevron-down select-chevron" aria-hidden="true"></i>
         </div>
       </div>
 
       <div class="field">
-        <label for="current_page">Current Page</label>
+        <label for="current_page" class="field-label">Current Page <span class="optional-pill">Out of {{ userbook.book.page_count or '—' }}</span></label>
         <div class="input-wrap">
-          <i class="ti ti-bookmark-filled input-icon"></i>
-          <input type="number" name="current_page" id="current_page"
-                 value="{{ userbook.current_page or '' }}" min="0">
+          <i class="ti ti-bookmark-filled input-icon" aria-hidden="true"></i>
+          <input type="number" name="current_page" id="current_page" class="form-control-input"
+                 value="{{ userbook.current_page or '' }}" min="0" max="{{ userbook.book.page_count or 9999 }}">
         </div>
       </div>
 
       <div class="field">
-        <label for="cid">Collection</label>
-        <div class="input-wrap">
-          <select name="cid" id="cid" class="select-input">
-            <option value="">— No collection —</option>
+        <label for="cid" class="field-label">Assigned Collection</label>
+        <div class="input-wrap select-wrapper">
+          <i class="ti ti-folder input-icon" aria-hidden="true"></i>
+          <select name="cid" id="cid" class="form-control-select">
+            <option value="">— No collection (General Vault) —</option>
             {% for col in collections %}
-              <option value="{{ col.cid }}"
-                {% if userbook.cid == col.cid %}selected{% endif %}>
+              <option value="{{ col.cid }}" {% if userbook.cid == col.cid %}selected{% endif %}>
                 {{ col.collection_name }}
               </option>
             {% endfor %}
           </select>
+          <i class="ti ti-chevron-down select-chevron" aria-hidden="true"></i>
         </div>
       </div>
 
       <div class="field">
-  <label>Rating <span class="optional">(optional)</span></label>
-  <div class="star-rating">
-    {% for i in range(1, 6) %}
-    <i class="ti ti-star star"
-       data-value="{{ i }}"
-       {% if userbook is defined and userbook.rating == i %}style="color:#e8a030"{% endif %}>
-    </i>
-    {% endfor %}
-  </div>
-  <input type="hidden" name="rating" id="rating-input"
-         value="{{ userbook.rating if userbook is defined else '' }}">
-</div>
-
-      <div class="field form-full">
-        <label for="note">Notes</label>
-        <textarea name="note" id="note" rows="3"
-                  placeholder="Your thoughts…">{{ userbook.note or '' }}</textarea>
+        <label class="field-label">Personal Rating</label>
+        <div class="star-rating-widget">
+          <div class="star-interactive-row" id="star-picker">
+            {% for i in range(1, 6) %}
+            <button type="button" class="star-btn {% if userbook.rating and userbook.rating >= i %}active{% endif %}"
+                    data-score="{{ i }}"
+                    aria-label="Rate {{ i }} star{{ 's' if i > 1 }}">
+              <i class="ti {% if userbook.rating and userbook.rating >= i %}ti-star-filled{% else %}ti-star{% endif %}"></i>
+            </button>
+            {% endfor %}
+          </div>
+          <span class="rating-feedback-label" id="rating-feedback">
+            {% if userbook.rating %}
+              {{ userbook.rating }} / 5 stars
+            {% else %}
+              Tap stars to rate
+            {% endif %}
+          </span>
+        </div>
+        <input type="hidden" name="rating" id="rating-input" value="{{ userbook.rating or '' }}">
       </div>
 
-      <div class="field form-full">
-        <label>Update Cover Image <span class="optional">(optional)</span></label>
-        {% if userbook.book.cover_image %}
-          <div style="margin-bottom:0.75rem;">
-            <img src="{{ url_for('static', filename=userbook.book.cover_image) }}"
-                 style="width:80px;height:120px;object-fit:cover;border-radius:8px;">
+      <div class="field form-full-width">
+        <label for="note" class="field-label">Personal Notes & Reflections</label>
+        <textarea name="note" id="note" class="form-control-textarea" rows="3"
+                  placeholder="Your personal review, annotations, or key thoughts on this book…">{{ userbook.note or '' }}</textarea>
+      </div>
+
+      <div class="field form-full-width">
+        <label class="field-label">Update Cover Artwork <span class="optional-pill">Optional — PNG, JPG, WebP</span></label>
+        <div class="upload-dropzone" id="update-cover-dropzone">
+          <div class="dropzone-preview-wrap" id="update-preview-box" style="display:none;">
+            <img id="update-preview-img" src="" alt="New Cover Preview" class="cover-live-preview">
+            <button type="button" class="btn-remove-preview" id="btn-remove-update-preview" title="Remove selected image">
+              <i class="ti ti-x" aria-hidden="true"></i>
+            </button>
           </div>
-        {% endif %}
-        <input type="file" name="file"
-               accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+          <div class="dropzone-content" id="update-instructions">
+            <div class="upload-icon-circle">
+              <i class="ti ti-photo-edit" aria-hidden="true"></i>
+            </div>
+            <span class="upload-primary-text">Upload a new cover image to replace the current artwork</span>
+            <span class="upload-secondary-text">Leave blank to keep existing cover</span>
+          </div>
+          <input type="file" name="file" id="update-cover-input"
+                 class="dropzone-hidden-input"
+                 accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp">
+        </div>
       </div>
 
     </div>
 
-    <button type="submit" class="btn-submit">
-      <i class="ti ti-check"></i> Save Changes
-    </button>
+    <div class="form-actions-bar">
+      <a href="{{ url_for('book.home') }}" class="btn-secondary-action">
+        Cancel
+      </a>
+      <button type="submit" class="btn-primary-action btn-large">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>
+        <span>Save Reading Changes</span>
+      </button>
+    </div>
 
   </form>
 </div>
-<script>
-const stars = document.querySelectorAll('.star-rating .star');
-const ratingInput = document.getElementById('rating-input');
 
-stars.forEach((star, index) => {
-  star.addEventListener('mouseover', () => {
-    stars.forEach((s, i) => s.style.color = i <= index ? '#e8a030' : '#ddd');
+<script>
+(function() {
+  const stars = document.querySelectorAll('#star-picker .star-btn');
+  const ratingInput = document.getElementById('rating-input');
+  const feedback = document.getElementById('rating-feedback');
+
+  const labels = {
+    1: '1 / 5 — Not for me',
+    2: '2 / 5 — It was okay',
+    3: '3 / 5 — Good read',
+    4: '4 / 5 — Really liked it',
+    5: '5 / 5 — Outstanding masterpiece'
+  };
+
+  let selectedRating = parseInt(ratingInput.value) || 0;
+
+  function renderStars(rating) {
+    stars.forEach((btn, idx) => {
+      const starIcon = btn.querySelector('i');
+      if (idx < rating) {
+        btn.classList.add('active');
+        starIcon.className = 'ti ti-star-filled';
+      } else {
+        btn.classList.remove('active');
+        starIcon.className = 'ti ti-star';
+      }
+    });
+
+    if (rating > 0 && labels[rating]) {
+      feedback.textContent = labels[rating];
+      feedback.style.color = '#1f2937';
+    } else {
+      feedback.textContent = 'Tap stars to rate';
+      feedback.style.color = '#64748b';
+    }
+  }
+
+  stars.forEach((btn, idx) => {
+    btn.addEventListener('mouseenter', () => renderStars(idx + 1));
+    btn.addEventListener('mouseleave', () => renderStars(selectedRating));
+    btn.addEventListener('click', () => {
+      if (selectedRating === idx + 1) {
+        selectedRating = 0;
+        ratingInput.value = '';
+      } else {
+        selectedRating = idx + 1;
+        ratingInput.value = selectedRating;
+      }
+      renderStars(selectedRating);
+    });
   });
-  star.addEventListener('mouseout', () => {
-    const saved = parseInt(ratingInput.value) || 0;
-    stars.forEach((s, i) => s.style.color = i < saved ? '#e8a030' : '#ddd');
+
+  // Cover image preview
+  const fileInput = document.getElementById('update-cover-input');
+  const dropzone = document.getElementById('update-cover-dropzone');
+  const previewBox = document.getElementById('update-preview-box');
+  const previewImg = document.getElementById('update-preview-img');
+  const instructions = document.getElementById('update-instructions');
+  const removeBtn = document.getElementById('btn-remove-update-preview');
+
+  if (!fileInput || !dropzone) return;
+
+  function showPreview(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewBox.style.display = 'block';
+      instructions.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      showPreview(this.files[0]);
+    }
   });
-  star.addEventListener('click', () => {
-    ratingInput.value = index + 1;
-    stars.forEach((s, i) => s.style.color = i <= index ? '#e8a030' : '#ddd');
-  });
-});
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fileInput.value = '';
+      previewImg.src = '';
+      previewBox.style.display = 'none';
+      instructions.style.display = 'flex';
+    });
+  }
+})();
 </script>
 {% endblock %}

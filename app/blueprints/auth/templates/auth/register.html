@@ -1,82 +1,162 @@
 {% extends "base.html" %}
-{% block title %}Create account — My Personal Book Vault{% endblock %}
+{% block title %}Create Account — My Personal Book Vault{% endblock %}
 {% block content %}
 <div class="auth-wrap">
+  <div class="auth-container">
 
-  <div class="auth-brand">
-    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="38" height="38" rx="9" fill="#2d5a3d"/>
-      <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.9"/>
-      <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
-      <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.5"/>
-    </svg>
-    <span class="auth-brand-name">My Personal <strong>Book Vault</strong></span>
-  </div>
+    <div class="auth-brand-center">
+      <div class="auth-logo-badge">
+        <svg width="36" height="36" viewBox="0 0 38 38" fill="none" aria-hidden="true">
+          <rect width="38" height="38" rx="10" fill="#246e47"/>
+          <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.95"/>
+          <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.75"/>
+          <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="auth-brand-heading">
+        <span class="auth-brand-kicker">Personal Archive</span>
+        <span class="auth-brand-name">Book <strong>Vault</strong></span>
+      </div>
+    </div>
 
-  <div class="auth-card">
-    <h1 class="auth-title">Create your vault</h1>
-    <p class="auth-sub">Begin your reading journey</p>
+    <div class="auth-card">
+      <header class="auth-card-header">
+        <h1 class="auth-title">Create Your Vault</h1>
+        <p class="auth-sub">Start archiving your reading history, stats, and collections.</p>
+      </header>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <div class="flash flash-{{ category }}">
-          <i class="ti ti-alert-circle"></i> {{ message }}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="auth-flash-stack" role="region" aria-label="Alerts">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}" role="alert">
+                <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form" novalidate>
+        <div class="field">
+          <label for="email" class="field-label">Email address <span class="required-star">*</span></label>
+          <div class="input-wrap">
+            <i class="ti ti-mail input-icon" aria-hidden="true"></i>
+            <input type="email" name="email" id="email"
+                   class="form-control-input"
+                   placeholder="name@example.com"
+                   value="{{ email or '' }}"
+                   autocomplete="email" required>
+          </div>
         </div>
-      {% endfor %}
-    {% endwith %}
 
-    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
-      <div class="field">
-  <label for="email">Email address</label>
-  <div class="input-wrap">
-    <i class="ti ti-mail input-icon" aria-hidden="true"></i>
-    <input type="email" name="email" id="email"
-           placeholder="name@example.com"
-           value="{{ email or '' }}"
-           autocomplete="email" required>
+        <div class="field">
+          <label for="username" class="field-label">Username <span class="required-star">*</span></label>
+          <div class="input-wrap">
+            <i class="ti ti-user input-icon" aria-hidden="true"></i>
+            <input type="text" name="username" id="username"
+                   class="form-control-input"
+                   placeholder="Choose a unique username"
+                   value="{{ username or '' }}"
+                   autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-password" class="field-label">Password <span class="required-star">*</span></label>
+          <div class="input-wrap">
+            <i class="ti ti-lock input-icon" aria-hidden="true"></i>
+            <input type="password" name="password" id="reg-password"
+                   class="form-control-input password-input"
+                   placeholder="Minimum 8 characters"
+                   autocomplete="new-password"
+                   minlength="8" required oninput="evaluatePasswordStrength(this.value)">
+            <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility('reg-password', 'reg-eye-icon')" aria-label="Toggle password visibility">
+              <i class="ti ti-eye" id="reg-eye-icon" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <div class="strength-meter-wrap" id="strength-container" style="display:none;">
+            <div class="strength-track">
+              <div class="strength-bar" id="strength-fill"></div>
+            </div>
+            <div class="strength-meta">
+              <span class="strength-text" id="strength-text">Password strength</span>
+              <span class="strength-hint">Use 8+ characters with mixed case & numbers</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary-auth">
+          <span>Create Account</span>
+          <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </button>
+      </form>
+
+      <div class="auth-card-footer">
+        <p>Already have an existing vault? <a href="{{ url_for('auth.index') }}">Sign in here</a></p>
+      </div>
+    </div>
+
+    <div class="auth-security-badge">
+      <i class="ti ti-lock-check" aria-hidden="true"></i>
+      <span>Protected with salted bcrypt password hashing</span>
+    </div>
+
   </div>
 </div>
 
-<div class="field">
-  <label for="username">Username</label>
-  <div class="input-wrap">
-    <i class="ti ti-user input-icon" aria-hidden="true"></i>
-    <input type="text" name="username" id="username"
-           placeholder="Choose a username"
-           value="{{ username or '' }}"
-           autocomplete="username" required>
-  </div>
-</div>
-
-<div class="field">
-  <label for="password">Password</label>
-  <div class="input-wrap">
-    <i class="ti ti-lock input-icon" aria-hidden="true"></i>
-    <input type="password" name="password" id="password"
-           placeholder="Min. 8 characters"
-           autocomplete="new-password"
-           minlength="8" required oninput="checkStrength(this.value)" required>
-    <button type="button" class="eye-btn" onclick="togglePwd()" aria-label="Show password">
-      <i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i>
-    </button>
-  </div>
-  <div class="strength">
-    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
-    <p class="strength-text" id="strength-text"></p>
-  </div>
-</div>
-      <button type="submit" class="btn-primary">Create account</button>
-    </form>
-
-    <p class="auth-footer">Already have an account? <a href="{{ url_for('auth.index') }}">Sign in</a></p>
-  </div>
-</div>
 <script>
-function togglePwd() {
-  const inp = document.getElementById('password');
-  const icon = document.getElementById('eye-icon');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  icon.className = inp.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
+function togglePasswordVisibility(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (!inp || !icon) return;
+  const isPwd = inp.type === 'password';
+  inp.type = isPwd ? 'text' : 'password';
+  icon.className = isPwd ? 'ti ti-eye-off' : 'ti ti-eye';
+}
+
+function evaluatePasswordStrength(val) {
+  const container = document.getElementById('strength-container');
+  const bar = document.getElementById('strength-fill');
+  const text = document.getElementById('strength-text');
+  if (!container || !bar || !text) return;
+
+  if (!val) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'block';
+
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  if (score <= 1) {
+    bar.style.width = '25%';
+    bar.className = 'strength-bar strength-weak';
+    text.textContent = 'Weak password';
+    text.style.color = '#dc2626';
+  } else if (score <= 3) {
+    bar.style.width = '55%';
+    bar.className = 'strength-bar strength-medium';
+    text.textContent = 'Fair password';
+    text.style.color = '#d97706';
+  } else if (score === 4) {
+    bar.style.width = '80%';
+    bar.className = 'strength-bar strength-good';
+    text.textContent = 'Good password';
+    text.style.color = '#2563eb';
+  } else {
+    bar.style.width = '100%';
+    bar.className = 'strength-bar strength-strong';
+    text.textContent = 'Strong password';
+    text.style.color = '#16a34a';
+  }
 }
 </script>
 {% endblock %}

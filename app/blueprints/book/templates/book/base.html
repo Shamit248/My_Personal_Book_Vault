@@ -6,99 +6,219 @@
   <title>{% block title %}My Personal Book Vault{% endblock %}</title>
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" type="image/png" href="/favicon.ico/bookvault_logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body class="app-body">
 
+  <!-- Mobile Top Header Bar -->
+  <header class="mobile-topbar" aria-label="Mobile Navigation Bar">
+    <div class="mobile-brand">
+      <svg width="28" height="28" viewBox="0 0 38 38" fill="none" aria-hidden="true">
+        <rect width="38" height="38" rx="9" fill="#2d7a52"/>
+        <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.95"/>
+        <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
+        <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.45"/>
+      </svg>
+      <span class="mobile-brand-title">Book <strong>Vault</strong></span>
+    </div>
+    <div class="mobile-header-actions">
+      <button type="button" class="theme-toggle-btn mobile-theme-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <i class="ti ti-moon" aria-hidden="true"></i>
+      </button>
+      <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+        <i class="ti ti-menu-2" id="menuToggleIcon" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
   <div class="app-layout">
 
     <!-- ── Sidebar ── -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <svg width="30" height="30" viewBox="0 0 38 38" fill="none">
-          <rect width="38" height="38" rx="9" fill="#2d7a52"/>
-          <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.95"/>
-          <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
-          <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.45"/>
-        </svg>
-        <span class="sidebar-brand-name">My Personal<br><strong>Book Vault</strong></span>
+    <aside class="sidebar" id="appSidebar" aria-label="Primary Navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="brand-icon-box">
+            <svg width="32" height="32" viewBox="0 0 38 38" fill="none" aria-hidden="true">
+              <rect width="38" height="38" rx="9" fill="#2d7a52"/>
+              <rect x="8" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.95"/>
+              <rect x="17" y="10" width="7" height="18" rx="2" fill="#fff" opacity="0.7"/>
+              <rect x="26" y="10" width="4" height="18" rx="2" fill="#fff" opacity="0.45"/>
+            </svg>
+          </div>
+          <div class="brand-text-wrap">
+            <span class="brand-eyebrow">Personal Archive</span>
+            <span class="sidebar-brand-name">Book <strong>Vault</strong></span>
+          </div>
+        </div>
+
+        <div class="sidebar-top-actions">
+          <button type="button" class="theme-toggle-btn sidebar-theme-btn" aria-label="Toggle theme" title="Toggle dark mode">
+            <i class="ti ti-moon" aria-hidden="true"></i>
+          </button>
+          <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
 
-      <span class="nav-section">Library</span>
-      <a href="{{ url_for('book.home') }}"
-         class="nav-item {% if request.endpoint == 'book.home' %}active{% endif %}">
-        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
-      </a>
-      <a href="{{ url_for('book.book_add') }}"
-         class="nav-item {% if request.endpoint == 'book.book_add' %}active{% endif %}">
-        <i class="ti ti-plus" aria-hidden="true"></i> Add Book
-      </a>
-      <span class="nav-section">Collections</span>
-{% for col in collections %}
-<a href="{{ url_for('collection.collection_detail', cid=col.cid) }}"
-   class="nav-item {% if request.endpoint == 'collection.collection_detail' and request.view_args.get('cid')|int == col.cid %}active{% endif %}">
-  <i class="ti ti-folder" aria-hidden="true"></i> {{ col.collection_name }}
-</a>
-{% else %}
-<span class="nav-empty">No collections yet</span>
-{% endfor %}
+      <nav class="sidebar-nav">
+        <span class="nav-section">Library</span>
+        <a href="{{ url_for('book.home') }}"
+           class="nav-item {% if request.endpoint == 'book.home' %}active{% endif %}">
+          <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('book.book_add') }}"
+           class="nav-item {% if request.endpoint == 'book.book_add' %}active{% endif %}">
+          <i class="ti ti-plus" aria-hidden="true"></i>
+          <span>Add Book</span>
+        </a>
 
-{# add this after the {% endfor %}: #}
-<form method="POST" action="{{ url_for('collection.create_collection') }}" style="padding: 4px 10px;">
-  <div class="input-wrap" style="display:flex;gap:6px;">
-    <input type="text" name="collection_name" placeholder="New collection…"
-           class="nav-input" required>
-    <button type="submit" class="nav-create-btn">
-      <i class="ti ti-plus"></i>
-    </button>
-  </div>
-</form>
+        <div class="nav-section-row">
+          <span class="nav-section">Collections</span>
+          <span class="nav-badge-count">{{ collections|length }}</span>
+        </div>
 
-<span class="nav-section">Social</span>
-<a href="{{ url_for('friends.friends_list') }}"
-   class="nav-item {% if request.endpoint and request.endpoint.startswith('friends.') %}active{% endif %}">
-  <i class="ti ti-users" aria-hidden="true"></i> Friends
-</a>
-<a href="{{ url_for('friends.activity_feed') }}"
-   class="nav-item {% if request.endpoint == 'friends.activity_feed' %}active{% endif %}">
-  <i class="ti ti-activity" aria-hidden="true"></i> Activity
-</a>
-<a href="{{ url_for('friends.requests_page') }}"
-   class="nav-item {% if request.endpoint == 'friends.requests_page' %}active{% endif %}">
-  <i class="ti ti-user-plus" aria-hidden="true"></i> Requests
-</a>
+        <div class="collections-scroll-wrap">
+          {% for col in collections %}
+          <a href="{{ url_for('collection.collection_detail', cid=col.cid) }}"
+             class="nav-item {% if request.endpoint == 'collection.collection_detail' and request.view_args.get('cid')|int == col.cid %}active{% endif %}">
+            <i class="ti ti-folder" aria-hidden="true"></i>
+            <span class="nav-text-truncate">{{ col.collection_name }}</span>
+          </a>
+          {% else %}
+          <span class="nav-empty"><i class="ti ti-folder-off" aria-hidden="true"></i> No collections yet</span>
+          {% endfor %}
+        </div>
 
-      <span class="nav-section">Account</span>
-<a href="{{ url_for('book.profile') }}"
-   class="nav-item {% if request.endpoint == 'book.profile' %}active{% endif %}">
-  <i class="ti ti-user" aria-hidden="true"></i>
-  {{ current_user.username }}
-</a>
+        <form method="POST" action="{{ url_for('collection.create_collection') }}" class="nav-collection-form">
+          <div class="nav-collection-input-group">
+            <input type="text" name="collection_name" placeholder="New collection…"
+                   class="nav-input" aria-label="New collection name" required>
+            <button type="submit" class="nav-create-btn" title="Create Collection" aria-label="Create Collection">
+              <i class="ti ti-plus" aria-hidden="true"></i>
+            </button>
+          </div>
+        </form>
+
+        <span class="nav-section">Community</span>
+        <a href="{{ url_for('friends.friends_list') }}"
+           class="nav-item {% if request.endpoint and request.endpoint.startswith('friends.friends_list') %}active{% endif %}">
+          <i class="ti ti-users" aria-hidden="true"></i>
+          <span>Friends</span>
+        </a>
+        <a href="{{ url_for('friends.activity_feed') }}"
+           class="nav-item {% if request.endpoint == 'friends.activity_feed' %}active{% endif %}">
+          <i class="ti ti-activity" aria-hidden="true"></i>
+          <span>Activity</span>
+        </a>
+        <a href="{{ url_for('friends.requests_page') }}"
+           class="nav-item {% if request.endpoint == 'friends.requests_page' %}active{% endif %}">
+          <i class="ti ti-user-plus" aria-hidden="true"></i>
+          <span>Requests</span>
+        </a>
+
+        <span class="nav-section">Account</span>
+        <a href="{{ url_for('book.profile') }}"
+           class="nav-item {% if request.endpoint == 'book.profile' %}active{% endif %}">
+          <i class="ti ti-user-circle" aria-hidden="true"></i>
+          <span class="nav-text-truncate">{{ current_user.username }}</span>
+        </a>
+      </nav>
 
       <div class="sidebar-footer">
+        <div class="sidebar-user-pill">
+          <div class="user-avatar-badge" aria-hidden="true">
+            {{ current_user.username[0]|upper }}
+          </div>
+          <div class="user-meta-wrap">
+            <span class="user-name-label">{{ current_user.username }}</span>
+            <span class="user-email-label">{{ current_user.email }}</span>
+          </div>
+        </div>
         <a href="{{ url_for('book.logout') }}" class="nav-item nav-item-danger">
-          <i class="ti ti-logout" aria-hidden="true"></i> Sign out
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Sign out</span>
         </a>
       </div>
     </aside>
 
     <!-- ── Main content ── -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-          <div class="flash flash-{{ category }}">
-            <i class="ti ti-alert-circle" aria-hidden="true"></i> {{ message }}
+        {% if messages %}
+          <div class="flash-stack" role="region" aria-label="Notifications">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}" role="alert">
+                <div class="flash-icon-box">
+                  {% if category == 'success' %}
+                    <i class="ti ti-circle-check" aria-hidden="true"></i>
+                  {% elif category == 'danger' %}
+                    <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+                  {% elif category == 'warning' %}
+                    <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                  {% else %}
+                    <i class="ti ti-info-circle" aria-hidden="true"></i>
+                  {% endif %}
+                </div>
+                <div class="flash-content">{{ message }}</div>
+                <button type="button" class="flash-dismiss" onclick="this.closest('.flash').remove()" aria-label="Close notification">
+                  <i class="ti ti-x" aria-hidden="true"></i>
+                </button>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
+        {% endif %}
       {% endwith %}
 
-      {% block content %}{% endblock %}
+      <div class="content-container">
+        {% block content %}{% endblock %}
+      </div>
     </main>
 
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    // Responsive mobile drawer navigation
+    const toggleBtn = document.getElementById('mobileMenuToggle');
+    const closeBtn = document.getElementById('sidebarCloseBtn');
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    function openSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.add('mobile-open');
+      overlay.classList.add('active');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      if (!sidebar) return;
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+    if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if (overlay) overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when pressing Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar && sidebar.classList.contains('mobile-open')) {
+        closeSidebar();
+      }
+    });
+  </script>
 </body>
 </html>
