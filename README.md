@@ -115,18 +115,7 @@ Modern readers face recurring challenges with commercial book tracking platforms
 ---
 
 ## 🔄 How It Works
-
-
- <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e0337a2d-e320-473a-9023-1960759fd157" />
-
-
-
-1. **Authenticate:** Register a new account or log in. The application starts an audited session in the `history` table.
-2. **Build Your Library:** Add a book by title, author, page count, and cover art. If the book already exists in the catalog, it links directly to your vault.
-3. **Track Reading:** Record your active reading page, adjust your status from `Reading` to `Completed`, assign star ratings, and write personal reflections.
-4. **Organize Collections:** Create personalized shelves from the sidebar and assign books to organize reading goals or genres.
-5. **Connect Socially:** Search for friends, send requests, and accept pending invitations.
-6. **Follow Activity:** Visit the **Activity Feed** to see what your friends are reading, what they have completed, and what they rated their books.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/0b2b2660-a1f3-4973-8419-23503f54585c" />
 
 ---
 
