@@ -116,18 +116,10 @@ Modern readers face recurring challenges with commercial book tracking platforms
 
 ## 🔄 How It Works
 
-```
- ┌────────────────┐       ┌─────────────────┐       ┌─────────────────┐
- │  1. Register   │  ──▶  │  2. Add Books   │  ──▶  │ 3. Log Progress │
- │  & Sign In     │       │  & Cover Images │       │  & Star Ratings │
- └────────────────┘       └─────────────────┘       └─────────────────┘
-                                                             │
-                                                             ▼
- ┌────────────────┐       ┌─────────────────┐       ┌─────────────────┐
- │ 6. Social Feed │  ◀──  │ 5. Connect with │  ◀──  │ 4. Organize in  │
- │  Activity View │       │  Friends & Sync │       │   Collections   │
- └────────────────┘       └─────────────────┘       └─────────────────┘
-```
+
+ <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e0337a2d-e320-473a-9023-1960759fd157" />
+
+
 
 1. **Authenticate:** Register a new account or log in. The application starts an audited session in the `history` table.
 2. **Build Your Library:** Add a book by title, author, page count, and cover art. If the book already exists in the catalog, it links directly to your vault.
